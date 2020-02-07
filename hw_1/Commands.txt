@@ -1,0 +1,16 @@
+cd /mnt/d/Users/raphael/Documents/KTH/Parallel/
+
+mpicc -o MandelbrotPar MandelbrotPar.c
+mpiexec -np 4 ./MandelbrotPar
+
+figure()
+load("color.txt","-ascii")
+max(max(color))
+min(min(color))
+coloru = uint8(color);
+RI = imref2d(size(coloru));
+RI.XWorldLimits = [-2 2];
+RI.YWorldLimits = [-2 2];
+imshow(coloru,RI)
+colormap(double([(rem((0:255)',8)>3) (rem((0:255)',4)>1) (rem((0:255)',2)==1)]))
+axis equal
