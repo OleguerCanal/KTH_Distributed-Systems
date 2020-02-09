@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #define w 2048
 #define h 2048
 #define N 256
@@ -12,7 +13,7 @@ unsigned char cal_pixel(double dreal, double dimag, double barg, int Narg);
 int main(void){
 	unsigned char color[w*h];
 	FILE *fp;
-	
+	double start = clock();
 	// Need to check if can devide by p
 	// Need to translate to c
 	double dx = 2.0*b/(w-1);
@@ -36,6 +37,8 @@ int main(void){
 		fprintf(fp,"\n");
 	}
 	fclose(fp);
+    double end = clock();
+    printf("Execution time: %e seconds.\n", ((double) (end - start))/CLOCKS_PER_SEC);
 }
 
 unsigned char cal_pixel(double dreal, double dimag, double barg, int Narg) {
