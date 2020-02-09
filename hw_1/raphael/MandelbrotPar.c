@@ -3,9 +3,9 @@
 #include "mpi.h"
 #define w 2048
 #define h 2048
-#define N 256
+#define N 1000
 #define b 2.0
-#define vb 2.0//0.2 //Viewing box
+#define vb 1.5//0.2 //Viewing box
 #define vbcx 0//-0.1 //x coordinate of center of viewing box
 #define vbcy 0//1 //x coordinate of center of viewing box
 

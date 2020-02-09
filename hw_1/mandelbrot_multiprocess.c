@@ -2,24 +2,13 @@
 #include <math.h>
 #include "mpi.h"
 
-#define M 2000
-#define N 2000
+#define M 2048
+#define N 2048
 
 struct complex {
     // c = a + b*i
     double a, b;
 };
-
-void save(const char* path, unsigned char image[]) {
-    FILE *fp;
-    fp = fopen(path,"w");
-    for (int j = 0; j < N; j++) {
-        for (int i = 0; i < M; i++)
-            fprintf(fp, "%hhu ", image[i+j*M]);
-        fprintf(fp, "\n");
-    }
-    fclose(fp);
-}
 
 struct complex f(struct complex z, struct complex d) {
     struct complex result = {z.a*z.a - z.b*z.b + d.a, 2*z.a*z.b + d.b};
@@ -31,10 +20,11 @@ double mod(struct complex z) {
     return z.a*z.a + z.b*z.b;
 }
 
-unsigned char get_pixel_value(int i, int j, double area, int max_iterations) {
+unsigned char get_pixel_value(int i, int j, double area, int max_iterations, struct complex center) {
     // Build d complex number
-    double real = i*(2*area)/(N-1) - area;
-    double imaginary = j*(2*area)/(M-1) - area;
+    double real = (((double) i)*(2.0*area)/((double) N-1.0)) - area - center.a;
+    // printf("%e \n", real);
+    double imaginary = (((double) j)*(2.0*area)/((double) M-1.0)) - area - center.b;
     struct complex d = {real, imaginary};
 
     // Iterate
@@ -50,8 +40,9 @@ unsigned char get_pixel_value(int i, int j, double area, int max_iterations) {
 
 int main() {
     // Mandelbrot parameters
-    double area = 2;
-    int max_iterations = 2000;
+    double area = 015;
+    struct complex center = {0.0, 0.0};
+    int max_iterations = 256;
     char text_img_path[] = "image.txt";
 
     // Multiprocess vars
@@ -75,7 +66,7 @@ int main() {
         fp = fopen(text_img_path, "w");
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < M; j++)
-                fprintf(fp, "%hhu ", get_pixel_value(i, j, area, max_iterations));
+                fprintf(fp, "%hhu ", get_pixel_value(i, j, area, max_iterations, center));
             fprintf(fp, "\n");
         }
 
@@ -99,7 +90,7 @@ int main() {
         unsigned char partial_image[n*M];
         for (int i = 0; i < n; i++)
             for (int j = 0; j < M; j++)
-                partial_image[i*M+j] = get_pixel_value(rank*n + i, j, area, max_iterations);
+                partial_image[i*M+j] = get_pixel_value(rank*n + i, j, area, max_iterations, center);
         
         // Send partial image
         status = MPI_Send(&partial_image, n*M, MPI_UNSIGNED_CHAR, 0, tag, MPI_COMM_WORLD);
