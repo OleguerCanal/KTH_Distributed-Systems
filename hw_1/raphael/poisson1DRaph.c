@@ -15,7 +15,7 @@
 
 /* define problem to be solved */
 #define N 1000   /* number of inner grid points */
-#define SMX 10 /* number of iterations */
+#define SMX 1000000 /* number of iterations */
 
 /* We assume linear data distribution. The formulae according to the lecture
    are:
@@ -31,10 +31,11 @@
 
 int main(int argc, char *argv[])
 {
+	
 /* implement coefficient functions */
 	// u = x*x-x
 	double r(const double x) {return -x;};
-	double f(const double x) {return 1+x*x*(x-1);};
+	double f(const double x) {return 2-x*x*(x-1);};
 	double h = 1.0/(N+1);
 
 /* Initialize MPI */
@@ -70,30 +71,39 @@ int main(int argc, char *argv[])
    - the initial guess is set to zero */
     double* u = (double *) calloc(I+2, sizeof(double));
 
+	/* char error_string[BUFSIZ];
+	int length_of_error_string; */
+	
+	double sendBuffer;
+	double recieveBuffer;
 
 /* Jacobi iteration */
     for (int step = 0; step < SMX; step++) {
 /* RB communication of overlap */
 		if (step>0) {
 			if (p%2==1) {
-				MPI_Send(unew,1,MPI_DOUBLE,p-1,0,MPI_COMM_WORLD);
-				MPI_Recv(u,1,MPI_DOUBLE,p-1,1,MPI_COMM_WORLD,&status);
-				printf("0 - %i:\t%g\t%g\t%g\t%g\n",p,u[0],u[I+1],unew[0],unew[I-1]);
+				sendBuffer = unew[0];
+				int ierr = MPI_Send(&sendBuffer,1,MPI_DOUBLE,p-1,0,MPI_COMM_WORLD);
+				int ierr2 = MPI_Recv(&recieveBuffer,1,MPI_DOUBLE,p-1,1,MPI_COMM_WORLD,&status);
+				u[0] = recieveBuffer;
 				if (p<P-1) {
-					MPI_Send(unew+(I-1)*sizeof(double),1,MPI_DOUBLE,p+1,2,MPI_COMM_WORLD);
-					MPI_Recv(u+(I+1)*sizeof(double),1,MPI_DOUBLE,p+1,3,MPI_COMM_WORLD,&status);
-					printf("1 - %i:\t%g\t%g\t%g\t%g\n",p,u[0],u[I+1],unew[0],unew[I-1]);
+					sendBuffer = unew[I-1];
+					int ierr = MPI_Send(&sendBuffer,1,MPI_DOUBLE,p+1,2,MPI_COMM_WORLD);
+					int ierr2 = MPI_Recv(&recieveBuffer,1,MPI_DOUBLE,p+1,3,MPI_COMM_WORLD,&status);
+					u[I+1] = recieveBuffer;  
 				}
 			} else {
 				if (p<P-1) {
-					MPI_Recv(u+(I+1)*sizeof(double),1,MPI_DOUBLE,p+1,0,MPI_COMM_WORLD,&status);
-					MPI_Send(unew+(I-1)*sizeof(double),1,MPI_DOUBLE,p+1,1,MPI_COMM_WORLD);
-					printf("2 - %i:\t%g\t%g\t%g\t%g\n",p,u[0],u[I+1],unew[0],unew[I-1]);
+					sendBuffer = unew[I-1];
+					int ierr2 = MPI_Recv(&recieveBuffer,1,MPI_DOUBLE,p+1,0,MPI_COMM_WORLD,&status);
+					int ierr = MPI_Send(&sendBuffer,1,MPI_DOUBLE,p+1,1,MPI_COMM_WORLD);
+					u[I+1] = recieveBuffer;
 				}
 				if (p>0) {
-					MPI_Recv(u,1,MPI_DOUBLE,p-1,2,MPI_COMM_WORLD,&status);
-					MPI_Send(unew,1,MPI_DOUBLE,p-1,3,MPI_COMM_WORLD);
-					printf("3 - %i:\t%g\t%g\t%g\t%g\n",p,u[0],u[I+1],unew[0],unew[I-1]);
+					sendBuffer = unew[0];
+					int ierr2 = MPI_Recv(&recieveBuffer,1,MPI_DOUBLE,p-1,2,MPI_COMM_WORLD,&status);
+					int ierr = MPI_Send(&sendBuffer,1,MPI_DOUBLE,p-1,3,MPI_COMM_WORLD);
+					u[0] = recieveBuffer;
 				}
 			}
 		}
@@ -121,25 +131,31 @@ int main(int argc, char *argv[])
 		for (int k = 0; k < I; k++) {
 			fprintf(fp,"%f ",unew[k]);
 		}
-		MPI_Send(u,1,MPI_LOGICAL,1,0,MPI_COMM_WORLD);
+		MPI_Send(&sendBuffer,1,MPI_DOUBLE,1,0,MPI_COMM_WORLD);
+	
+	printf("----------- Process %i finished -----------\n",p);
 	} 
 	if (p%(P-1)>0) {
-		MPI_Recv(u,1,MPI_LOGICAL,p-1,0,MPI_COMM_WORLD,&status);
+		MPI_Recv(&recieveBuffer,1,MPI_DOUBLE,p-1,0,MPI_COMM_WORLD,&status);
 		fp = fopen("poisson.txt","a");
 		for (int k = 0; k < I; k++) {
 			fprintf(fp,"%f ",unew[k]);
 		}
-		MPI_Send(u,1,MPI_LOGICAL,p+1,0,MPI_COMM_WORLD);
+		MPI_Send(&sendBuffer,1,MPI_DOUBLE,p+1,0,MPI_COMM_WORLD);
+	
+	printf("----------- Process %i finished -----------\n",p);
 	}
-	if (p==P-1) {
-		MPI_Recv(u,1,MPI_LOGICAL,p-1,0,MPI_COMM_WORLD,&status);
+	if (p==(P-1)) {
+		MPI_Recv(&recieveBuffer,1,MPI_DOUBLE,p-1,0,MPI_COMM_WORLD,&status);
 		fp = fopen("poisson.txt","a");
 		for (int k = 0; k < I; k++) {
 			fprintf(fp,"%f ",unew[k]);
 		}
 		fprintf(fp,"%f",0.0);
-	}
 	
+	printf("----------- Process %i finished -----------\n",p);
+
+	}
 	
 /* Instead of using gather (which may lead to excessive memory requirements
    on the master process) each process will write its own data portion. This
