@@ -34,9 +34,15 @@ int main(int argc, char *argv[])
 	
 /* implement coefficient functions */
 	// u = x*x-x
-	double r(const double x) {return -x;};
+	/* double r(const double x) {return -x;};
 	double f(const double x) {return 2-x*x*(x-1);};
+	double h = 1.0/(N+1); */
+	
+	// u = x*x*x*x*x + x*x*x*x - 3*x*x*x + 2*x*x - x
+	double r(const double x) {return -16*x*(3.14-x)/(5*3.14*3.14-4*x*(3.14-x));}; //Approx of -sin(x)
+	double f(const double x) {return 20*x*x*x + 12*x*x - 18*x + 4 + r(x)*(x*x*x*x*x + x*x*x*x - 3*x*x*x + 2*x*x - x);};
 	double h = 1.0/(N+1);
+	
 
 /* Initialize MPI */
     MPI_Init(&argc, &argv);
@@ -131,6 +137,7 @@ int main(int argc, char *argv[])
 		for (int k = 0; k < I; k++) {
 			fprintf(fp,"%f ",unew[k]);
 		}
+		fflush(fp);
 		MPI_Send(&sendBuffer,1,MPI_DOUBLE,1,0,MPI_COMM_WORLD);
 	
 	printf("----------- Process %i finished -----------\n",p);
@@ -141,6 +148,7 @@ int main(int argc, char *argv[])
 		for (int k = 0; k < I; k++) {
 			fprintf(fp,"%f ",unew[k]);
 		}
+		fflush(fp);
 		MPI_Send(&sendBuffer,1,MPI_DOUBLE,p+1,0,MPI_COMM_WORLD);
 	
 	printf("----------- Process %i finished -----------\n",p);
