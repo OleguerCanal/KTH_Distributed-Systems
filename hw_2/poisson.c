@@ -17,12 +17,52 @@ extern double r(const double x) {
     return x;
 }
 extern double f(const double x) {
-    return exp(x)*(2*cos(x) - sin(x) + x*sin(x));
+    // return exp(x)*(2*cos(x) - sin(x) + x*sin(x));
+    return x*x*(x-1) + 2;
 }
 extern double real_u(const double x) {
-    return exp(x)*sin(x);
+    // return exp(x)*sin(x);
+    return x*(x-1);
 }
 
+void print_vect(const double* vect, int size, int p) {
+    for (int i = 0; i < size; i++) {
+        printf("%i, %e \n", p, vect[i]);
+    }
+    printf("------------\n");
+}
+
+void print_to_file(const double* unew, int p, int P, int I) {
+    double sendBuffer, recieveBuffer;
+    int status;
+    FILE *fp;
+	if (p==0) {
+		fp = fopen("poisson.txt","w");
+		fprintf(fp,"%f ",0.0);
+		for (int k = 0; k < I; k++) {
+			fprintf(fp,"%f ",unew[k]);
+		}
+		fflush(fp);
+		MPI_Send(&sendBuffer,1,MPI_DOUBLE,1,0,MPI_COMM_WORLD); // Tell p1 to start writting
+	}
+	if (p%(P-1)>0) {
+		MPI_Recv(&recieveBuffer,1,MPI_DOUBLE,p-1,0,MPI_COMM_WORLD,&status);
+		fp = fopen("poisson.txt","a");
+		for (int k = 0; k < I; k++) {
+			fprintf(fp,"%f ",unew[k]);
+		}
+		fflush(fp);
+		MPI_Send(&sendBuffer,1,MPI_DOUBLE,p+1,0,MPI_COMM_WORLD); // Tell the others to start writting
+	}
+	if (p==(P-1)) {
+		MPI_Recv(&recieveBuffer,1,MPI_DOUBLE,p-1,0,MPI_COMM_WORLD,&status);
+		fp = fopen("poisson.txt","a");
+		for (int k = 0; k < I; k++) {
+			fprintf(fp,"%f ",unew[k]);
+		}
+		fprintf(fp,"%f",0.0);
+    }
+}
 
 /* We assume linear data distribution. The formulae according to the lecture
    are:
@@ -47,19 +87,23 @@ int main(int argc, char *argv[]) {
     }
     double h = (double) 1.0/N;
 
-    int I = (N+P-p-1)/P;
+    int I = (N+P-p-1)/P;  // Elements in current processor
+    printf("I %i \n", I);
     double* unew = (double*) malloc(I*sizeof(double));
     double* u = (double*) malloc((I+2)*sizeof(double));
     u[0] = 0;
     u[I+1] = 0;
-    double* u_real = (double*) malloc(I*sizeof(double));  // NOTE: This should probably br I+2
+
+    // Vectors with function points
     double* rr = (double*) malloc(I*sizeof(double));
     double* ff = (double*) malloc(I*sizeof(double));
+    double* u_real = (double*) malloc(I*sizeof(double));  // NOTE: This should probably br I+2
 
-    int L = N/P;
-    int R = N%P;
+    int L = N/P;          // Elements by processor
+    int R = N%P;          // 1 element added to first R processors
     for (int i = 0; i < I; i++) {
-        double x = p*L + MIN(p,R) + i;
+        double x = h*(p*L + MIN(p,R) + i);
+        // printf("I: %i, %e \n", p, x);
         rr[i] = r(x);
         ff[i] = f(x);
         u_real[i] = real_u(x);
@@ -89,28 +133,16 @@ int main(int argc, char *argv[]) {
             }
         }
 /* local iteration step */
-    for (int i = 0; i < I; i++)
-	    unew[i] = (u[i]+u[i+2]-h*h*ff[i])/(2.0-h*h*rr[i]);
-    for (int i = 0; i < I; i++)
-        u[i+1] = unew[i]; // OBS: We dont change u[0], u[-1]
+        for (int i = 0; i < I; i++)
+            unew[i] = (u[i] + u[i+2]-h*h*ff[i])/(2.0-h*h*rr[i]);
+        for (int i = 0; i < I; i++)
+            u[i+1] = unew[i]; // OBS: We dont change u[0], u[-1]
     }
-
     double error = 0;
     for (int i = 0; i < I; i++) {
         error += (u[i]-u_real[i])*(u[i]-u_real[i]);
     }
     printf("Error: %e \n", sqrt(error));
-
-/* output for graphical representation */
-/* Instead of using gather (which may lead to excessive memory requirements
-   on the master process) each process will write its own data portion. This
-   introduces a sequentialization: the hard disk can only write (efficiently)
-   sequentially. Therefore, we use the following strategy:
-   1. The master process writes its portion. (file creation)
-   2. The master sends a signal to process 1 to start writing.
-   3. Process p waites for the signal from process p-1 to arrive.
-   4. Process p writes its portion to disk. (append to file)
-   5. process p sends the signal to process p+1 (if it exists).
-*/
+    print_to_file(unew, p, P, I);
     MPI_Finalize();
 }
