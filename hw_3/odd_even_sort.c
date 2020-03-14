@@ -74,19 +74,6 @@ void copyArray(double *in, double *out, int low, int high) {
         out[i - low] = in[i];
 }
 
-void updateArrayX(double *x, double *y, int I, bool get_min) {
-    // Merges arrays x and y and:
-    // if get_min: assigns first half to x
-    // else: assigns second half to x
-    double *merged = (double *)malloc(2 * I * sizeof(double));
-    mergeArrays(x, I, y, I, merged);
-    if (get_min)
-        copyArray(merged, x, 0, I);  // Get min
-    else
-        copyArray(merged, x, I, 2 * I);  // Get max
-    free(merged);
-}
-
 void printArray(double *x, int n, int p) {
     // Prints array
     printf("Processor %i: ", p);
@@ -111,9 +98,18 @@ int main(int argc, char **argv) {
     MPI_Barrier(MPI_COMM_WORLD);
 
     int N = atoi(argv[1]);
-    int I = N / P;  // Local size (think if n mod p not 0!!)
+    int I = N / P;
+    int I_prev = (p-1 < N%P) ? I + 1 : I; 
+    int I_next = (p+1 < N%P) ? I + 1 : I;
+    I = (p < N%P) ? I + 1 : I; 
+    // printf("Processor: %i, ", p);
+    // printf("I_prev %i, ", I_prev);
+    // printf("I %i, ", I);
+    // printf("I_next %i\n", I_next);
+
     double *x = (double *)malloc(I * sizeof(double));
     double *y = (double *)malloc(I * sizeof(double));
+    double *merged = (double *)malloc((2*I + 1) * sizeof(double));  // Container to merge vectors (only allocate once)
     fillArray(x, I, p);
 
     double start_time = MPI_Wtime();
@@ -130,24 +126,28 @@ int main(int argc, char **argv) {
         if (even_step) {
             if (even_process && !last_process) {
                 MPI_Send(x, I, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD);
-                MPI_Recv(y, I, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                updateArrayX(x, y, I, true);
+                MPI_Recv(y, I_next, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                mergeArrays(x, I, y, I_next, merged);  // Sorted Merge
+                copyArray(merged, x, 0, I); // Get Min
             }
             if (!even_process && !first_process) {  // odd porcess
-                MPI_Recv(y, I, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                MPI_Recv(y, I_prev, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 MPI_Send(x, I, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD);
-                updateArrayX(x, y, I, false);
+                mergeArrays(x, I, y, I_prev, merged);  // Sorted Merge
+                copyArray(merged, x, I_prev, I_prev+I); // Get Max
             }
         } else {  // odd step
             if (even_process && !first_process) {
                 MPI_Send(x, I, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD);
-                MPI_Recv(y, I, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                updateArrayX(x, y, I, false);
+                MPI_Recv(y, I_prev, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                mergeArrays(x, I, y, I_prev, merged);  // Sorted Merge
+                copyArray(merged, x, I_prev, I_prev+I); // Get Max
             }
             if (!even_process && !last_process) {  // odd porcess
-                MPI_Recv(y, I, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                MPI_Recv(y, I_next, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 MPI_Send(x, I, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD);
-                updateArrayX(x, y, I, true);
+                mergeArrays(x, I, y, I_next, merged);  // Sorted Merge
+                copyArray(merged, x, 0, I); // Get Min
             }
         }
         MPI_Barrier(MPI_COMM_WORLD);
@@ -168,7 +168,7 @@ int main(int argc, char **argv) {
         fprintf(file, "%f\n", parallel_time);
     }
 
-    // Print result
+    // // Print result
     // if (p == 0)
     //     printf("Sorted result: \n");
     // for (int i = 0; i < P; i++)

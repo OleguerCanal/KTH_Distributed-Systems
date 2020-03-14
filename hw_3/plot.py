@@ -11,7 +11,7 @@ def parse_line(line):
 
 if __name__ == "__main__":
     # filepaths = ["1000000", "10000000", "100000000", "1000000000"]
-    filepaths = ["1000000"]
+    filepaths = ["100000000", "1000000000"]
 
     for filepath in filepaths:
         processors = []
