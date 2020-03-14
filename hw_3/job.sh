@@ -15,5 +15,11 @@
 
 module add i-compilers intelmpi
 
-mpirun -np 48 ./hello
-
+mpiexec -n 1 odd_even_sort 100000000
+mpiexec -n 2 odd_even_sort 100000000
+mpiexec -n 4 odd_even_sort 100000000
+mpiexec -n 5 odd_even_sort 100000000
+mpiexec -n 8 odd_even_sort 100000000
+mpiexec -n 10 odd_even_sort 100000000
+mpiexec -n 16 odd_even_sort 100000000
+mpiexec -n 20 odd_even_sort 100000000

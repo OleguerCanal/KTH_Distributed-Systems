@@ -10,19 +10,21 @@ def parse_line(line):
     return 
 
 if __name__ == "__main__":
-    filepaths = ["1", "2", "4", "6", "8"]
+    # filepaths = ["1000000", "10000000", "100000000", "1000000000"]
+    filepaths = ["1000000"]
 
     for filepath in filepaths:
-        n_s = []
+        processors = []
         times = []
         with open(filepath) as fp:
             line = fp.readline()
             while line:
-                n_s.append(int(line.split(" ")[0]))
+                processors.append(int(line.split(" ")[0]))
                 times.append(float(line.split(" ")[1]))
                 line = fp.readline()
-        print(times)
-        plt.plot(n_s, times, label="Processors: " + filepath)
+        # ASSUMING TIMES[0] IS 1 PROCESSOR!!!
+        times = [times[0] / time  for time in times] # Compute speedup
+        plt.plot(processors, times, label="Data size: " + str("{:.1e}".format(int(filepath))))
 
     plt.legend()
     plt.show()

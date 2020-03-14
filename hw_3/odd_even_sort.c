@@ -1,35 +1,31 @@
-#include <stdbool.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <math.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "mpi.h"
 
 // mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 1 odd_even_sort;
 
-void fillArray(double *x, int n, int p)
-{
+void fillArray(double *x, int n, int p) {
     // Fills array of length n with random doubles
-    srandom(p + 1); // Set random seed
+    srandom(p + 1);  // Set random seed
     for (int i = 0; i < n; i++)
         x[i] = (double)rand() / (double)(RAND_MAX);
 }
 
-void swap(double *a, double *b)
-{
+void swap(double *a, double *b) {
     // Swap two doubles
     double t = *a;
     *a = *b;
     *b = t;
 }
 
-int partition(double *arr, int low, int high)
-{
+int partition(double *arr, int low, int high) {
     double pivot = arr[high];
     int i = (low - 1);
     for (int j = low; j < high; j++)
-        if (arr[j] < pivot)
-        {
+        if (arr[j] < pivot) {
             i++;
             swap(&arr[i], &arr[j]);
         }
@@ -37,46 +33,34 @@ int partition(double *arr, int low, int high)
     return (i + 1);
 }
 
-void quickSort(double *arr, int low, int high)
-{
+void quickSort(double *arr, int low, int high) {
     // Single-process sorting
-    if (low < high)
-    {
+    if (low < high) {
         int pi = partition(arr, low, high);
         quickSort(arr, low, pi - 1);
         quickSort(arr, pi + 1, high);
     }
 }
 
-void mergeArrays(double *in1, int n1, double *in2, int n2, double *out)
-{
+void mergeArrays(double *in1, int n1, double *in2, int n2, double *out) {
     // Given two soretd arrays, returns sorted merge
     int it1 = 0;
     int it2 = 0;
 
     double val = -1;
-    for (int i = 0; i < n1 + n2; i++)
-    {
-        if (it1 < n1 && it2 < n2)
-        {
-            if (in1[it1] < in2[it2])
-            {
+    for (int i = 0; i < n1 + n2; i++) {
+        if (it1 < n1 && it2 < n2) {
+            if (in1[it1] < in2[it2]) {
                 val = in1[it1];
                 it1++;
-            }
-            else
-            {
+            } else {
                 val = in2[it2];
                 it2++;
             }
-        }
-        else if (it1 < n1)
-        {
+        } else if (it1 < n1) {
             val = in1[it1];
             it1++;
-        }
-        else
-        {
+        } else {
             val = in2[it2];
             it2++;
         }
@@ -84,28 +68,26 @@ void mergeArrays(double *in1, int n1, double *in2, int n2, double *out)
     }
 }
 
-void copyArray(double *in, double *out, int low, int high)
-{
+void copyArray(double *in, double *out, int low, int high) {
     // Copes in[low:high] to out
     for (int i = low; i < high; i++)
         out[i - low] = in[i];
 }
 
-void updateArrayX(double *x, double *y, int I, bool get_min)
-{
+void updateArrayX(double *x, double *y, int I, bool get_min) {
     // Merges arrays x and y and:
     // if get_min: assigns first half to x
     // else: assigns second half to x
-    double merged[2 * I];
+    double *merged = (double *)malloc(2 * I * sizeof(double));
     mergeArrays(x, I, y, I, merged);
     if (get_min)
-        copyArray(merged, x, 0, I); // Get min
+        copyArray(merged, x, 0, I);  // Get min
     else
-        copyArray(merged, x, I, 2 * I); // Get max
+        copyArray(merged, x, I, 2 * I);  // Get max
+    free(merged);
 }
 
-void printArray(double *x, int n, int p)
-{
+void printArray(double *x, int n, int p) {
     // Prints array
     printf("Processor %i: ", p);
     for (int i = 0; i < n; i++)
@@ -113,83 +95,77 @@ void printArray(double *x, int n, int p)
     printf("\n");
 }
 
-int main(int argc, char **argv)
-{
-    if (argc < 2)
-    {
+int main(int argc, char **argv) {
+    if (argc < 2) {
         printf("No size N given");
         return 0;
     }
 
     // Get MPI info
-    int P, p; // Number of processors, current processor
+    int P, p;  // Number of processors, current processor
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &P);
     MPI_Comm_rank(MPI_COMM_WORLD, &p);
 
     // Timing
     MPI_Barrier(MPI_COMM_WORLD);
-    double start_time = MPI_Wtime();
 
     int N = atoi(argv[1]);
-    int I = N / P; // Local size (think if n mod p not 0!!)
-    double x[I], y[I];
+    int I = N / P;  // Local size (think if n mod p not 0!!)
+    double *x = (double *)malloc(I * sizeof(double));
+    double *y = (double *)malloc(I * sizeof(double));
     fillArray(x, I, p);
+
+    double start_time = MPI_Wtime();
     quickSort(x, 0, I - 1);
-    // printArray(x, I, p);
+    // double local_sort_time = MPI_Wtime() - start_time;
 
     bool even_process = p % 2;
     bool first_process = (p == 0);
     bool last_process = (p == P - 1);
-    for (int step = 0; step < P; step++)
-    {
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    for (int step = 0; step <= P; step++) {
         bool even_step = step % 2;
-        if (even_step)
-        {
-            if (even_process && !last_process)
-            {
-                MPI_Send(&x, I, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD);
-                MPI_Recv(&y, I, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        if (even_step) {
+            if (even_process && !last_process) {
+                MPI_Send(x, I, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD);
+                MPI_Recv(y, I, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 updateArrayX(x, y, I, true);
             }
-            if (!even_process && !first_process)
-            { // odd porcess
-                MPI_Recv(&y, I, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                MPI_Send(&x, I, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD);
+            if (!even_process && !first_process) {  // odd porcess
+                MPI_Recv(y, I, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                MPI_Send(x, I, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD);
                 updateArrayX(x, y, I, false);
             }
-        }
-        else
-        { // odd step
-            if (even_process && !first_process)
-            {
-                MPI_Send(&x, I, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD);
-                MPI_Recv(&y, I, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        } else {  // odd step
+            if (even_process && !first_process) {
+                MPI_Send(x, I, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD);
+                MPI_Recv(y, I, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 updateArrayX(x, y, I, false);
             }
-            if (!even_process && !last_process)
-            { // odd porcess
-                MPI_Recv(&y, I, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                MPI_Send(&x, I, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD);
+            if (!even_process && !last_process) {  // odd porcess
+                MPI_Recv(y, I, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                MPI_Send(x, I, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD);
                 updateArrayX(x, y, I, true);
             }
         }
         MPI_Barrier(MPI_COMM_WORLD);
     }
+    if (p == 0) {
+        double parallel_time = MPI_Wtime() - start_time;
 
-    if (p == 0)
-    {
-        double exec_time = MPI_Wtime() - start_time;
-        printf("Execution time: %e seconds.\n", exec_time);
-
-        int length = snprintf(NULL, 0, "%d", P);
+        int length = snprintf(NULL, 0, "%d", N);
         char *filename = malloc(length + 1);
-        snprintf(filename, length + 1, "%d", P);
+        snprintf(filename, length + 1, "%d", N);
 
-        printf("filename: %s\n", filename);
+        // double serial_time = P * local_sort_time;  // Serial time approximation (save time)
+        // double speedup = serial_time / parallel_time;
+        // printf("Speedup: %f.\n", speedup);
+
         FILE *file = fopen(filename, "a");
-        fprintf(file, "%d ", N);
-        fprintf(file, "%f\n", exec_time);
+        fprintf(file, "%d ", P);
+        fprintf(file, "%f\n", parallel_time);
     }
 
     // Print result

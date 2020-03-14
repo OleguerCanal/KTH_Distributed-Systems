@@ -1,49 +1,8 @@
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 1 odd_even_sort 100
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 1 odd_even_sort 500
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 1 odd_even_sort 1000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 1 odd_even_sort 5000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 1 odd_even_sort 10000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 1 odd_even_sort 50000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 1 odd_even_sort 100000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 1 odd_even_sort 500000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 1 odd_even_sort 1000000
-
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 2 odd_even_sort 100
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 2 odd_even_sort 500
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 2 odd_even_sort 1000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 2 odd_even_sort 5000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 2 odd_even_sort 10000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 2 odd_even_sort 50000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 2 odd_even_sort 100000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 2 odd_even_sort 500000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 2 odd_even_sort 1000000
-
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 4 odd_even_sort 100
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 4 odd_even_sort 500
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 4 odd_even_sort 1000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 4 odd_even_sort 5000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 4 odd_even_sort 10000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 4 odd_even_sort 50000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 4 odd_even_sort 100000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 4 odd_even_sort 500000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 4 odd_even_sort 1000000
-
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 6 odd_even_sort 100
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 6 odd_even_sort 500
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 6 odd_even_sort 1000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 6 odd_even_sort 5000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 6 odd_even_sort 10000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 6 odd_even_sort 50000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 6 odd_even_sort 100000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 6 odd_even_sort 500000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 6 odd_even_sort 1000000
-
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 8 odd_even_sort 100
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 8 odd_even_sort 500
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 8 odd_even_sort 1000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 8 odd_even_sort 5000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 8 odd_even_sort 10000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 8 odd_even_sort 50000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 8 odd_even_sort 100000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 8 odd_even_sort 500000
-mpicc odd_even_sort.c -o odd_even_sort; mpiexec -n 8 odd_even_sort 1000000
+mpicc odd_even_sort.c -O3 -o odd_even_sort; mpiexec -n 1 odd_even_sort 1000000
+mpicc odd_even_sort.c -O3 -o odd_even_sort; mpiexec -n 2 odd_even_sort 1000000
+mpicc odd_even_sort.c -O3 -o odd_even_sort; mpiexec -n 8 odd_even_sort 1000000
+# mpicc odd_even_sort.c -O3 -o odd_even_sort; mpiexec -n 3 odd_even_sort 1000000
+# mpicc odd_even_sort.c -O3 -o odd_even_sort; mpiexec -n 4 odd_even_sort 1000000
+# mpicc odd_even_sort.c -O3 -o odd_even_sort; mpiexec -n 5 odd_even_sort 1000000
+# mpicc odd_even_sort.c -O3 -o odd_even_sort; mpiexec -n 6 odd_even_sort 1000000
+# mpicc odd_even_sort.c -O3 -o odd_even_sort; mpiexec -n 7 odd_even_sort 1000000
