@@ -17,11 +17,9 @@ module add i-compilers intelmpi
 
 mpicc -std=c99 odd_even_sort.c -O3 -o odd_even_sort;
 
-mpirun -np 1 ./odd_even_sort 100000000
-mpirun -np 2 ./odd_even_sort 100000000
-mpirun -np 4 ./odd_even_sort 100000000
-mpirun -np 5 ./odd_even_sort 100000000
-mpirun -np 8 ./odd_even_sort 100000000
-mpirun -np 10 ./odd_even_sort 100000000
-mpirun -np 16 ./odd_even_sort 100000000
-mpirun -np 20 ./odd_even_sort 100000000
+for data_size in 10000000 100000000 1000000000
+do
+    for (( nodes=1; nodes<=24; nodes++ )); do
+        mpirun -np $nodes ./odd_even_sort $data_size
+    done
+done

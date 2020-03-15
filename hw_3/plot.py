@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 import time
+import glob
 
 def parse_line(line):
     row = []
@@ -11,7 +12,11 @@ def parse_line(line):
 
 if __name__ == "__main__":
     # filepaths = ["1000000", "10000000", "100000000", "1000000000"]
-    filepaths = ["100000000", "1000000000"]
+    # filepaths = ["100000000", "1000000000"]
+    # filepaths = ["1000000"]
+
+    filepaths = list(glob.glob('10*'))
+    print(filepaths)
 
     for filepath in filepaths:
         processors = []

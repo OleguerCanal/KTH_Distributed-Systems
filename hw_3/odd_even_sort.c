@@ -99,22 +99,23 @@ int main(int argc, char **argv) {
 
     int N = atoi(argv[1]);
     int I = N / P;
-    int I_prev = (p-1 < N%P) ? I + 1 : I; 
-    int I_next = (p+1 < N%P) ? I + 1 : I;
-    I = (p < N%P) ? I + 1 : I; 
+    int I_prev = (p - 1 < N % P) ? I + 1 : I;
+    int I_next = (p + 1 < N % P) ? I + 1 : I;
+    I = (p < N % P) ? I + 1 : I;
+
     // printf("Processor: %i, ", p);
     // printf("I_prev %i, ", I_prev);
     // printf("I %i, ", I);
     // printf("I_next %i\n", I_next);
 
     double *x = (double *)malloc(I * sizeof(double));
-    double *y = (double *)malloc(I * sizeof(double));
-    double *merged = (double *)malloc((2*I + 1) * sizeof(double));  // Container to merge vectors (only allocate once)
+    double *y_prev = (double *)malloc(I_prev * sizeof(double));
+    double *y_next = (double *)malloc(I_next * sizeof(double));
+    double *merged = (double *)malloc((2 * I + 2) * sizeof(double));  // Container to merge vectors (only allocate once)
     fillArray(x, I, p);
 
     double start_time = MPI_Wtime();
     quickSort(x, 0, I - 1);
-    // double local_sort_time = MPI_Wtime() - start_time;
 
     bool even_process = p % 2;
     bool first_process = (p == 0);
@@ -126,49 +127,50 @@ int main(int argc, char **argv) {
         if (even_step) {
             if (even_process && !last_process) {
                 MPI_Send(x, I, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD);
-                MPI_Recv(y, I_next, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                mergeArrays(x, I, y, I_next, merged);  // Sorted Merge
-                copyArray(merged, x, 0, I); // Get Min
+                MPI_Recv(y_next, I_next, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                mergeArrays(x, I, y_next, I_next, merged);  // Sorted Merge
+                copyArray(merged, x, 0, I);                 // Get Min
             }
             if (!even_process && !first_process) {  // odd porcess
-                MPI_Recv(y, I_prev, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                MPI_Recv(y_prev, I_prev, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 MPI_Send(x, I, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD);
-                mergeArrays(x, I, y, I_prev, merged);  // Sorted Merge
-                copyArray(merged, x, I_prev, I_prev+I); // Get Max
+                mergeArrays(x, I, y_prev, I_prev, merged);  // Sorted Merge
+                copyArray(merged, x, I_prev, I_prev + I);   // Get Max
             }
         } else {  // odd step
             if (even_process && !first_process) {
                 MPI_Send(x, I, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD);
-                MPI_Recv(y, I_prev, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                mergeArrays(x, I, y, I_prev, merged);  // Sorted Merge
-                copyArray(merged, x, I_prev, I_prev+I); // Get Max
+                MPI_Recv(y_prev, I_prev, MPI_DOUBLE, p - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                mergeArrays(x, I, y_prev, I_prev, merged);  // Sorted Merge
+                copyArray(merged, x, I_prev, I_prev + I);   // Get Max
             }
             if (!even_process && !last_process) {  // odd porcess
-                MPI_Recv(y, I_next, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                MPI_Recv(y_next, I_next, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 MPI_Send(x, I, MPI_DOUBLE, p + 1, 0, MPI_COMM_WORLD);
-                mergeArrays(x, I, y, I_next, merged);  // Sorted Merge
-                copyArray(merged, x, 0, I); // Get Min
+                mergeArrays(x, I, y_next, I_next, merged);  // Sorted Merge
+                copyArray(merged, x, 0, I);                 // Get Min
             }
         }
         MPI_Barrier(MPI_COMM_WORLD);
     }
-    if (p == 0) {
-        double parallel_time = MPI_Wtime() - start_time;
 
+    double processor_time = MPI_Wtime() - start_time;
+    // printf("%f\n", processor_time);
+    double max_time;
+    MPI_Reduce(&processor_time, &max_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);  // Get max execution time
+
+    if (p == 0) {
+        // double parallel_time = MPI_Wtime() - start_time;
         int length = snprintf(NULL, 0, "%d", N);
         char *filename = malloc(length + 1);
         snprintf(filename, length + 1, "%d", N);
-
-        // double serial_time = P * local_sort_time;  // Serial time approximation (save time)
-        // double speedup = serial_time / parallel_time;
-        // printf("Speedup: %f.\n", speedup);
-
+        // filename = strcat("times/", filename);
         FILE *file = fopen(filename, "a");
         fprintf(file, "%d ", P);
-        fprintf(file, "%f\n", parallel_time);
+        fprintf(file, "%f\n", max_time);
+        printf("Max time: %f\n", max_time);
     }
-
-    // // Print result
+    // Print result
     // if (p == 0)
     //     printf("Sorted result: \n");
     // for (int i = 0; i < P; i++)
