@@ -54,3 +54,7 @@ dkms.conf
 hw_1/mandel
 hw_1/mpi_hello_world.cc
 hw_1/image.txt
+
+
+.vscode
+odd_even_sort
