@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &p);
 
     // Timing
-    MPI_Barrier(MPI_COMM_WORLD);
+    // MPI_Barrier(MPI_COMM_WORLD);
 
     int N = atoi(argv[1]);
     int I = N / P;
@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
     bool even_process = p % 2;
     bool first_process = (p == 0);
     bool last_process = (p == P - 1);
-    MPI_Barrier(MPI_COMM_WORLD);
+    // MPI_Barrier(MPI_COMM_WORLD);
 
     for (int step = 0; step <= P; step++) {
         bool even_step = step % 2;
@@ -151,8 +151,8 @@ int main(int argc, char **argv) {
                 copyArray(merged, x, 0, I);                 // Get Min
             }
         }
-        MPI_Barrier(MPI_COMM_WORLD);
-    }
+        // MPI_Barrier(MPI_COMM_WORLD);
+    } 
 
     double processor_time = MPI_Wtime() - start_time;
     // printf("%f\n", processor_time);
