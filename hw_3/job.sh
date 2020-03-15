@@ -7,7 +7,7 @@
 # email notification
 #SBATCH --mail-type=BEGIN,END
 # 10 minutes wall-clock time will be given to this job
-#SBATCH -t 00:10:00
+#SBATCH -t 00:30:00
 # Number of nodes
 #SBATCH --nodes=2
 # set tasks per node to 24 in order to disablr hyperthreading
