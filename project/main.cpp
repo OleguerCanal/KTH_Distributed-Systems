@@ -1,8 +1,10 @@
-#include<person.hpp>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "mpi.h"
+
+#include<person.hpp>
+#include<region.hpp>
+
 
 int main(int argc, char** argv) {
     int p, P;
