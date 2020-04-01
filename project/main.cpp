@@ -3,8 +3,9 @@
 #include <iostream>
 #include "mpi.h"
 
-#include<person.hpp>
-#include<region.hpp>
+#include <person.hpp>
+#include <region.hpp>
+#include <env.hpp>
 
 
 int main(int argc, char** argv) {
@@ -16,16 +17,15 @@ int main(int argc, char** argv) {
     MPI_Status status;
 
     //todo: separate zone and create regions and people
-
-    for (double t = 0; t <= nrDays; t += Person.TIME_STEP) {
-        region.movePeople();
-        //todo: send people to neighbours
-        region.updateStatus();
-        //todo: output
-    }
-
-
-
+    int number_of_people = 10;
+    Region region(number_of_people, p, P);
+    region.print();
+    // for (float t = 0; t <= nrDays; t += env::TIME_STEP) {
+    //     region.movePeople();
+    //     //todo: send people to neighbours
+    //     region.updateStatus();
+    //     //todo: output
+    // }
 
     std::cout << p << ", " << P << std::endl;
     MPI_Finalize();
