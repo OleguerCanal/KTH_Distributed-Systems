@@ -17,35 +17,52 @@ void Region::movePeople() {
     for (Person person : people_) {
         person.move(generator);
     }
+    //TODO: resort
 }
 
-void Region::updateStatus() {
-    for (Person person : people_) {
-        if (person.isInfected()) {
-            if (person.beSick() == 0) {
-                people_.erase(person);  //Change list to inactive
+void Region::updateStatus(std::default_random_engine generator) {
+    std::list<Person*> recentPeople = {};
+    std::set<Person>::iterator it;
+    std::list<Person*>::iterator it2;
+    for (it = people_.begin(); it != people_.end(); ++it) {
+        Person* person = (Person*) &(*it);
+
+        if (person->isInfected()) {
+            if (person->beSick() == 0) {
+                people_.erase(*person);  //Change list to inactive
                 //inactivePeople_.insert(person);
-            } else {
-                infectPeople(person);
+            } 
+            else {
+                for (it2 = recentPeople.begin(); it2 != recentPeople.end(); ++it2) {
+                    Person* person2 = *it2;
+                    if (person->distanceSquaredTo(*person2) < env::infection_distance_squared_ && person2->isSusceptible())
+                        person2->tryToInfect(generator);
+                }
+            }
+        } 
+        else {
+            for (it2 = recentPeople.begin(); it2 != recentPeople.end(); ++it2) {
+                Person* person2 = *it2;
+                if (person->distanceSquaredTo(*person2) < env::infection_distance_squared_ && person2->isInfected())
+                    person->tryToInfect(generator);
             }
         }
-    }
-}
 
-void Region::infectPeople(Person person) {
-    std::default_random_engine generator(time(0) + p_*1000);
-    std::set<Person> InfectablePeople = getInfectablePeople(person);
-    for (Person person : InfectablePeople) {
-        if (UniformDistribution(generator) < env::INFECTION_RATE)
-            person.getInfected(generator);
-    }
-}
+        while ((recentPeople.size() > 0) && ((*recentPeople.begin())->x < person->x - env::infection_distance_))
+            recentPeople.pop_front();
 
-std::set<Person> Region::getInfectablePeople(Person person) {
-    //todo: find all people close enough to be infected by the given person
+        recentPeople.push_back(person);
+    }
 }
 
 void Region::getPeopleBorder(int border) {
+    //TODO: returns all people at env::infection_distance_/2 of the border
+}
+
+Person * Region::getRandomPerson() {
+    std::set<Person>::iterator it = people_.begin();
+    std::advance(it, rand() % people_.size());
+    return (Person*) &(*it);
 }
 
 void Region::print() {

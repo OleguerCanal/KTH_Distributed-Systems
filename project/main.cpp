@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <random>
 #include "mpi.h"
 
 #include <person.hpp>
@@ -19,6 +20,13 @@ int main(int argc, char** argv) {
     //todo: separate zone and create regions and people
     int number_of_people = 10;
     Region region(number_of_people, p, P);
+    std::default_random_engine generator(time(0) + p * 1000);
+    if (p == 0) {
+        Person* Mike = region.getRandomPerson();
+        Mike->getInfected(generator);
+    }
+    region.print();
+    region.updateStatus(generator);
     region.print();
     // for (float t = 0; t <= nrDays; t += env::TIME_STEP) {
     //     region.movePeople();

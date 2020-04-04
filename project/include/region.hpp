@@ -3,6 +3,7 @@
 #include<string>
 #include<set>
 #include<random>
+#include <list> 
 
 #include<env.hpp>
 #include<person.hpp>
@@ -13,10 +14,12 @@ class Region {
 
     void movePeople();
 
-    void updateStatus();
+    void updateStatus(std::default_random_engine generator);
 
     void getPeopleBorder(int border);
 
+    Person *getRandomPerson();
+     
     void print();
 
   private:
@@ -28,10 +31,4 @@ class Region {
     //std::set<Person> inactivePeople_;
     std::uniform_real_distribution<float> UniformDistribution =
                   std::uniform_real_distribution<float>(0.0, 1.0);
-
-
-    void infectPeople(Person person);
-
-    std::set<Person> getInfectablePeople(Person person);
-
 };
