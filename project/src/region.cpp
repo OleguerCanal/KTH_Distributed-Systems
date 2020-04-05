@@ -60,7 +60,7 @@ std::string Region::getStatus() {
     for (Person person : people_)
         if (person.isInfected())
             nbInfected++;
-    msg << "S" << people_.size() - nbInfected - removedPeople_ << " I" << nbInfected << " R" << removedPeople_ ;
+    msg << "S:" << people_.size() - nbInfected << " I:" << nbInfected << " R:" << removedPeople_;
     return msg.str();
 }
 
@@ -76,4 +76,13 @@ void Region::print() {
     for (Person person : people_) {
         person.print();
     }
+}
+
+std::string Region::get_serialized_people() {
+    std::stringstream msg;
+    for (Person person : people_) {
+        msg << person.x << "," << person.y << "," << person.isInfected() << ";";
+    }
+    msg << "|";
+    return msg.str();
 }
