@@ -13,13 +13,13 @@ class Person {
     Person(float pos_x, float pos_y);
     ~Person(){}
 
-    void move(std::default_random_engine generator);
+    void move(std::default_random_engine *generator);
 
     float distanceSquaredTo(Person other);
 
-    bool tryToInfect(std::default_random_engine generator);
+    bool tryToInfect(std::default_random_engine *generator);
 
-    void getInfected(std::default_random_engine generator);
+    void getInfected(std::default_random_engine *generator);
 
     int beSick();
 

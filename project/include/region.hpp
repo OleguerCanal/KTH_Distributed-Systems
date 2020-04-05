@@ -4,17 +4,18 @@
 #include<set>
 #include<random>
 #include <list> 
+#include <algorithm>
 
 #include<env.hpp>
 #include<person.hpp>
 
 class Region {
   public:
-    Region(int people_num, int processor, int P);
+    Region(int people_num, int processor, int P, std::default_random_engine *generator);
 
-    void movePeople();
+    void movePeople(std::default_random_engine *generator);
 
-    bool updateStatus(std::default_random_engine generator);
+    bool updateStatus(std::default_random_engine *generator);
 
     std::string getStatus();
 
@@ -25,8 +26,7 @@ class Region {
     void print();
 
   private:
-    float world_size_ = 10.0f;
-    std::set<Person> people_;
+    std::vector<Person> people_;
     int p_;
     int P_;
     int removedPeople_ = 0;
