@@ -22,7 +22,7 @@ void Region::movePeople(std::default_random_engine *generator) {
 bool Region::updateStatus(std::default_random_engine *generator) {
     // Returns total number of infected people
     bool change = false;
-    std::list<Person> recentPeople = {};
+    std::list<Person*> recentPeople = {};
     for (Person& person : people_) {
         if (person.isInfected()) {
             if (person.beSick() == 0) {
@@ -32,23 +32,23 @@ bool Region::updateStatus(std::default_random_engine *generator) {
                 //inactivePeople_.insert(person);
             } 
             else {
-                for (Person& person2 : recentPeople) {
-                    if ((person.distanceSquaredTo(person2) < env::infection_distance_squared_) && person2.isSusceptible())
-                        change |= person2.tryToInfect(generator);
+                for (Person* person2 : recentPeople) {
+                    if ((person.distanceSquaredTo(*person2) < env::infection_distance_squared_) && person2->isSusceptible())
+                        change |= person2->tryToInfect(generator);
                 }
             }
         } 
         if (person.isSusceptible()) {
-            for (Person& person2 : recentPeople) {
-                if ((person.distanceSquaredTo(person2) < env::infection_distance_squared_) && person2.isInfected())
+            for (Person* person2 : recentPeople) {
+                if ((person.distanceSquaredTo(*person2) < env::infection_distance_squared_) && person2->isInfected())
                     change |= person.tryToInfect(generator);
             }
         }
 
-        while ((recentPeople.size() > 0) && ((person.x - (*recentPeople.begin()).x) >  env::infection_distance_))
+        while ((recentPeople.size() > 0) && ((person.x - (*recentPeople.begin())->x) >  env::infection_distance_))
             recentPeople.pop_front();
 
-        recentPeople.push_back(person);
+        recentPeople.push_back(&person);
     }
 
     return change;
