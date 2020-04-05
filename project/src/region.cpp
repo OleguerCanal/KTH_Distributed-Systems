@@ -77,3 +77,12 @@ void Region::print() {
         person.print();
     }
 }
+
+std::string Region::get_serialized_people() {
+    std::stringstream msg;
+    for (Person person : people_) {
+        msg << person.x << "," << person.y << "," << person.isInfected() << ";";
+    }
+    msg << "|";
+    return msg.str();
+}

@@ -61,3 +61,5 @@ odd_even_sort
 build/
 /.vs
 /project/CMakeSettings.json
+project/evolution.txt
+project/evolution.mp4
