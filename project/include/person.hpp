@@ -17,7 +17,7 @@ class Person {
 
     float distanceSquaredTo(Person other);
 
-    void tryToInfect(std::default_random_engine generator);
+    bool tryToInfect(std::default_random_engine generator);
 
     void getInfected(std::default_random_engine generator);
 

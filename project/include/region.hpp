@@ -14,7 +14,9 @@ class Region {
 
     void movePeople();
 
-    void updateStatus(std::default_random_engine generator);
+    bool updateStatus(std::default_random_engine generator);
+
+    std::string getStatus();
 
     void getPeopleBorder(int border);
 
@@ -23,10 +25,11 @@ class Region {
     void print();
 
   private:
-    float world_size_ = 100.0f;
+    float world_size_ = 10.0f;
     std::set<Person> people_;
     int p_;
     int P_;
+    int removedPeople_ = 0;
     
     //std::set<Person> inactivePeople_;
     std::uniform_real_distribution<float> UniformDistribution =
