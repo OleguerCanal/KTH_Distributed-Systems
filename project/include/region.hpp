@@ -4,6 +4,7 @@
 #include<set>
 #include<random>
 #include <list> 
+#include <algorithm>
 
 #include<env.hpp>
 #include<person.hpp>
@@ -26,7 +27,7 @@ class Region {
 
   private:
     float world_size_ = 10.0f;
-    std::set<Person> people_;
+    std::vector<Person> people_;
     int p_;
     int P_;
     int removedPeople_ = 0;
