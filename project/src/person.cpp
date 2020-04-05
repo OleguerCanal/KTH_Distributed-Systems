@@ -8,9 +8,9 @@ Person::Person(float pos_x, float pos_y) {
     y = pos_y;
 }
 
-void Person::move(std::default_random_engine generator) {
-    x += NormalDistribution(generator);
-    y += NormalDistribution(generator);
+void Person::move(std::default_random_engine *generator) {
+    x += NormalDistribution(*generator);
+    y += NormalDistribution(*generator);
     //TOREMOVE:
     if (x > 10.0)
         x -= 10.0;
@@ -26,17 +26,17 @@ float Person::distanceSquaredTo(Person other) {
     return (x - other.x) * (x - other.x) + (y - other.y) * (y - other.y);
 }
 
-bool Person::tryToInfect(std::default_random_engine generator) {
-    if (UniformDistribution(generator) < env::INFECTION_RATE) {
+bool Person::tryToInfect(std::default_random_engine *generator) {
+    if (UniformDistribution(*generator) < env::INFECTION_RATE) {
         getInfected(generator);
         return true;
     }
     return false;
 }
 
-void Person::getInfected(std::default_random_engine generator) {
+void Person::getInfected(std::default_random_engine *generator) {
     // NOTE Isnt this very low?? 0.01*5? We'll see in simulations ;)
-    status_ = (int) (1/env::TIME_STEP * GammaDistribution(generator));
+    status_ = (int) (1/env::TIME_STEP * GammaDistribution(*generator));
 }
 
 int Person::beSick() {

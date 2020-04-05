@@ -1,25 +1,25 @@
 #include <region.hpp>
 
-Region::Region(int people_num, int processor, int P, std::default_random_engine generator) {
+Region::Region(int people_num, int processor, int P, std::default_random_engine *generator) {
     p_ = processor;
     P_ = P;
     // Instantiate all the people
     for (int i = 0; i < people_num; i++) {
-        float pos_x = world_size_ * UniformDistribution(generator);
-        float pos_y = world_size_ * UniformDistribution(generator);
+        float pos_x = env::world_size_ * UniformDistribution(*generator);
+        float pos_y = env::world_size_ * UniformDistribution(*generator);
         people_.emplace_back(Person(pos_x, pos_y));
     }
     std::sort(people_.begin(), people_.end());
 }
 
-void Region::movePeople(std::default_random_engine generator) {
+void Region::movePeople(std::default_random_engine *generator) {
     for (Person& person : people_) {
         person.move(generator);
     }
     std::sort(people_.begin(), people_.end());
 }
 
-bool Region::updateStatus(std::default_random_engine generator) {
+bool Region::updateStatus(std::default_random_engine *generator) {
     // Returns total number of infected people
     bool change = false;
     std::list<Person> recentPeople = {};

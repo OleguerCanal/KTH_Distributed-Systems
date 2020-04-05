@@ -11,11 +11,11 @@
 
 class Region {
   public:
-    Region(int people_num, int processor, int P, std::default_random_engine generator);
+    Region(int people_num, int processor, int P, std::default_random_engine *generator);
 
-    void movePeople(std::default_random_engine generator);
+    void movePeople(std::default_random_engine *generator);
 
-    bool updateStatus(std::default_random_engine generator);
+    bool updateStatus(std::default_random_engine *generator);
 
     std::string getStatus();
 
@@ -26,7 +26,6 @@ class Region {
     void print();
 
   private:
-    float world_size_ = 10.0f;
     std::vector<Person> people_;
     int p_;
     int P_;

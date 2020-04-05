@@ -20,11 +20,11 @@ int main(int argc, char** argv) {
     std::default_random_engine generator(time(0) + p * 1000);
 
     //todo: separate zone and create regions and people
-    int number_of_people = 10000;
-    Region region(number_of_people, p, P, generator);
+    int number_of_people = 100;
+    Region region(number_of_people, p, P, &generator);
     if (p == 0) {
         Person* Mike = region.getRandomPerson();
-        Mike->getInfected(generator);
+        Mike->getInfected(&generator);
     }
     //region.print();
 
@@ -37,10 +37,10 @@ int main(int argc, char** argv) {
     msg.str(""); 
 
     for (float t = 0; t <= nrDays; t += env::TIME_STEP) {
-        region.movePeople(generator);
+        region.movePeople(&generator);
         //TODO: make sure people stay within borders, communication
-        bool change = region.updateStatus(generator);
-
+        bool change = region.updateStatus(&generator);
+        
         if (change) {
             std::string Status = region.getStatus();
             msg << "p" << p << " t" << t << ": " << Status << std::endl;
