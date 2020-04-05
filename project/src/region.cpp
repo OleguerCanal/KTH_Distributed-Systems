@@ -60,7 +60,7 @@ std::string Region::getStatus() {
     for (Person person : people_)
         if (person.isInfected())
             nbInfected++;
-    msg << "S:" << people_.size() - nbInfected << " I:" << nbInfected << " R:" << removedPeople_;
+    msg << "S:" << people_.size() - nbInfected - removedPeople_ << " I:" << nbInfected << " R:" << removedPeople_;
     return msg.str();
 }
 
