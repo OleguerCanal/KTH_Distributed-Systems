@@ -11,9 +11,9 @@
 
 class Region {
   public:
-    Region(int people_num, int processor, int P);
+    Region(int people_num, int processor, int P, std::default_random_engine generator);
 
-    void movePeople();
+    void movePeople(std::default_random_engine generator);
 
     bool updateStatus(std::default_random_engine generator);
 

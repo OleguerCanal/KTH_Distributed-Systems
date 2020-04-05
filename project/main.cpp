@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 
     //todo: separate zone and create regions and people
     int number_of_people = 10000;
-    Region region(number_of_people, p, P);
+    Region region(number_of_people, p, P, generator);
     if (p == 0) {
         Person* Mike = region.getRandomPerson();
         Mike->getInfected(generator);
@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
     msg.str(""); 
 
     for (float t = 0; t <= nrDays; t += env::TIME_STEP) {
-        region.movePeople();
+        region.movePeople(generator);
         //TODO: make sure people stay within borders, communication
         bool change = region.updateStatus(generator);
 

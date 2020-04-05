@@ -1,10 +1,9 @@
 #include <region.hpp>
 
-Region::Region(int people_num, int processor, int P) {
+Region::Region(int people_num, int processor, int P, std::default_random_engine generator) {
     p_ = processor;
     P_ = P;
     // Instantiate all the people
-    std::default_random_engine generator(time(0) + p_*1000);
     for (int i = 0; i < people_num; i++) {
         float pos_x = world_size_ * UniformDistribution(generator);
         float pos_y = world_size_ * UniformDistribution(generator);
@@ -13,8 +12,7 @@ Region::Region(int people_num, int processor, int P) {
     std::sort(people_.begin(), people_.end());
 }
 
-void Region::movePeople() {
-    std::default_random_engine generator(time(0) + p_*1000);
+void Region::movePeople(std::default_random_engine generator) {
     for (Person& person : people_) {
         person.move(generator);
     }
@@ -35,19 +33,19 @@ bool Region::updateStatus(std::default_random_engine generator) {
             } 
             else {
                 for (Person& person2 : recentPeople) {
-                    if (person.distanceSquaredTo(person2) < env::infection_distance_squared_ && person2.isSusceptible())
+                    if ((person.distanceSquaredTo(person2) < env::infection_distance_squared_) && person2.isSusceptible())
                         change |= person2.tryToInfect(generator);
                 }
             }
         } 
         if (person.isSusceptible()) {
             for (Person& person2 : recentPeople) {
-                if (person.distanceSquaredTo(person2) < env::infection_distance_squared_ && person2.isInfected())
+                if ((person.distanceSquaredTo(person2) < env::infection_distance_squared_) && person2.isInfected())
                     change |= person.tryToInfect(generator);
             }
         }
 
-        while ((recentPeople.size() > 0) && (person.x - (*recentPeople.begin()).x <  env::infection_distance_))
+        while ((recentPeople.size() > 0) && ((person.x - (*recentPeople.begin()).x) >  env::infection_distance_))
             recentPeople.pop_front();
 
         recentPeople.push_back(person);
