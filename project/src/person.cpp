@@ -2,7 +2,7 @@
 
 Person::Person(float pos_x, float pos_y) {
     GammaDistribution = std::gamma_distribution<float>(5.0, 2.0 / 3.0);
-    NormalDistribution = std::normal_distribution<float>(0.0, env::TIME_STEP);
+    NormalDistribution = std::normal_distribution<float>(0.0, env::TIME_STEP/100);
     UniformDistribution = std::uniform_real_distribution<float>(0.0, 1.0);
     x = pos_x;
     y = pos_y;
@@ -19,7 +19,7 @@ void Person::move(std::default_random_engine generator) {
     if (x < 0.0)
         x += 10.0;
     if (y < 0.0)
-        x += 10.0;
+        y += 10.0;
 }
 
 float Person::distanceSquaredTo(Person other) {

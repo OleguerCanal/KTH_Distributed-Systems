@@ -22,6 +22,9 @@ class Region {
 
     Person *getRandomPerson();
      
+    std::string get_serialized_people();
+    
+    
     void print();
 
   private:

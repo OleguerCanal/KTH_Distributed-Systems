@@ -7,6 +7,7 @@
 #include <person.hpp>
 #include <region.hpp>
 #include <env.hpp>
+#include <helper.hpp>
 
 
 int main(int argc, char** argv) {
@@ -35,6 +36,8 @@ int main(int argc, char** argv) {
     std::cout << msg.str();
     msg.str(""); 
 
+    int iteration = 0;
+    int vis_freq = 1000;
     for (float t = 0; t <= nrDays; t += env::TIME_STEP) {
         region.movePeople();
         //TODO: make sure people stay within borders, communication
@@ -42,12 +45,16 @@ int main(int argc, char** argv) {
 
         if (change) {
             std::string Status = region.getStatus();
-            msg << "p: " << p << ", t:" << t << ", Status:" << Status << std::endl;
+            msg << "p: " << p << ", t:" << t << ", Status: " << Status << std::endl;
             std::cout << msg.str();
             msg.str("");
         }
+        // if (iteration%vis_freq == 0) {
+            print_to_file(region, p, P);
+        // }
+        iteration += 1;
     }
-
+    std::cout << "iterations: " << iteration << std::endl;
     std::cout << p << ", " << P << std::endl;
     MPI_Finalize();
 }
