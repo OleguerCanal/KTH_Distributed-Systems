@@ -1,1 +1,1 @@
-mpirun -n 2 build/my_mpi_bin
+mpirun -n 1 build/my_mpi_bin

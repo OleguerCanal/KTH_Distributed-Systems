@@ -25,8 +25,11 @@ int main(int argc, char** argv) {
         Person* Mike = region.getRandomPerson();
         Mike->getInfected(generator);
     }
+    
+    std::cout << "Time step 1" << std::endl;
     region.print();
     region.updateStatus(generator);
+    std::cout << "Time step 2" << std::endl;
     region.print();
     // for (float t = 0; t <= nrDays; t += env::TIME_STEP) {
     //     region.movePeople();
