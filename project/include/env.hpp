@@ -2,9 +2,9 @@
 #include <math.h>
 
 namespace env {
-    const float TIME_STEP = 0.01;
-    const float INFECTION_RATE = 0.02;
-    const float SPEED = 10;
+    const float TIME_STEP = 0.0001;
+    const float INFECTION_RATE = 0.00005;
+    const float SPEED = 500;
 
     const float world_size_ = 1.0f;
 

@@ -91,7 +91,7 @@ class AnimatedScatter(object):
                 while line:
                     x, y, status = self.__parse_line(line)
                     # color = ['green' if l == 0 else 'red' for l in status]
-                    self.data.append([x, y, 2-np.array(status)])
+                    self.data.append([x, y, 1-np.array(status)/2.0])
                     line = fp.readline()
         self.length = len(self.data)
         # self.data = cycle(self.data)
