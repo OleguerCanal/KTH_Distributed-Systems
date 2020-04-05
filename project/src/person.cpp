@@ -9,17 +9,17 @@ Person::Person(float pos_x, float pos_y) {
 }
 
 void Person::move(std::default_random_engine *generator) {
-    x += NormalDistribution(*generator);
-    y += NormalDistribution(*generator);
-    //TOREMOVE:
-    if (x > 10.0)
-        x -= 10.0;
-    if (y > 10.0)
-        y -= 10.0;
+    x += NormalDistribution(*generator)*env::SPEED;
+    y += NormalDistribution(*generator)*env::SPEED;
+    //TODO REMOVE:
+    if (x > env::world_size_)
+        x -= env::world_size_;
+    if (y > env::world_size_)
+        y -= env::world_size_;
     if (x < 0.0)
-        x += 10.0;
+        x += env::world_size_;
     if (y < 0.0)
-        y += 10.0;
+        y += env::world_size_;
 }
 
 float Person::distanceSquaredTo(Person other) {

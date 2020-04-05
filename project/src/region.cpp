@@ -81,7 +81,7 @@ void Region::print() {
 std::string Region::get_serialized_people() {
     std::stringstream msg;
     for (Person person : people_) {
-        msg << person.x << "," << person.y << "," << person.isInfected() << ";";
+        msg << person.x << "," << person.y << "," << person.isInfected()+2*(!(person.isInfected() || person.isSusceptible())) << ";";
     }
     msg << "|";
     return msg.str();
