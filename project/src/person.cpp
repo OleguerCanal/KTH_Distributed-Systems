@@ -18,7 +18,7 @@ Person::Person(float pos_x, float pos_y, int status) {
 }
 
 
-int Person::move(std::default_random_engine *generator) {
+int Person::move(std::default_random_engine *generator, int p) {
     x += NormalDistribution(*generator)*env::SPEED;
     y += NormalDistribution(*generator)*env::SPEED;
 
@@ -28,12 +28,16 @@ int Person::move(std::default_random_engine *generator) {
     if (y < 0.0)
         y += env::world_size_;
 
-    // Code to which area to move: 0: stay, -1: prev region, +1 nex region
+    // Code to which area to move: 0: stay, -1: prev region and stay, +1 nex region and stay, -2 prev reg, 2 nex reg
     int change_region = 0;
-    if (x > env::world_size_)
+    if (x > env::world_size_ - env::infection_distance_ + p * env::world_size_)
         change_region = 1;
-    if (x < 0.0)
+    if (x > env::world_size_ + env::infection_distance_ + p * env::world_size_)
+        change_region = 2;
+    if (x < env::infection_distance_ + p * env::world_size_)
         change_region = -1;
+    if (x < - env::infection_distance_ + p * env::world_size_)
+        change_region = -2;
     return change_region;
 }
 

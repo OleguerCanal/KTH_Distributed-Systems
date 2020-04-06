@@ -5,7 +5,7 @@ Region::Region(int people_num, int processor, int P, std::default_random_engine 
     P_ = P;
     // Instantiate all the people
     for (int i = 0; i < people_num; i++) {
-        float pos_x = env::world_size_ * UniformDistribution(*generator);
+        float pos_x = env::world_size_ * UniformDistribution(*generator)+processor*env::world_size_;
         float pos_y = env::world_size_ * UniformDistribution(*generator);
         people_.emplace_back(Person(pos_x, pos_y));
     }
@@ -18,12 +18,12 @@ void Region::movePeople(std::default_random_engine *generator,
     std::vector<Person> people_that_stay;
     people_that_stay.reserve(people_.size());  // Avoid relocation O(n)
     for (Person& person : people_) {  // O(n)
-        int region_change = person.move(generator);
-        if (region_change == 0)
+        int region_change = person.move(generator,p_);
+        if (region_change >= -1 && region_change <= 1)
             people_that_stay.push_back(person);
-        if (region_change == -1) 
+        if (region_change <= -1) 
             people_to_prev_region->push_back(person);
-        if (region_change == 1)
+        if (region_change >= 1)
             people_to_next_region->push_back(person);
     }
     people_ = people_that_stay; // Unsorted 
@@ -87,6 +87,14 @@ std::string Region::getStatus() {
 
 void Region::getPeopleBorder(int border) {
     //TODO: returns all people at env::infection_distance_/2 of the border
+}
+
+void Region::deleteSidePeople() {
+    std::vector<Person> people_that_stay;
+    for (Person& person : people_)
+        if (person.x < env::world_size_+ p_*env::world_size_ && person.x > p_ * env::world_size_)
+            people_that_stay.push_back(person);
+    people_ = people_that_stay;
 }
 
 Person * Region::getRandomPerson() {

@@ -25,6 +25,8 @@ class Region {
 
     void getPeopleBorder(int border);
 
+    void deleteSidePeople();
+
     Person *getRandomPerson();
      
     std::string get_serialized_people();
