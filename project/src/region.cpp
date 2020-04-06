@@ -12,11 +12,32 @@ Region::Region(int people_num, int processor, int P, std::default_random_engine 
     std::sort(people_.begin(), people_.end());
 }
 
-void Region::movePeople(std::default_random_engine *generator) {
-    for (Person& person : people_) {
-        person.move(generator);
+void Region::movePeople(std::default_random_engine *generator,
+                        std::list<Person> *people_to_prev_region,
+                        std::list<Person> *people_to_next_region) {
+    std::vector<Person> people_that_stay;
+    people_that_stay.reserve(people_.size());  // Avoid relocation O(n)
+    for (Person& person : people_) {  // O(n)
+        int region_change = person.move(generator);
+        if (region_change == 0)
+            people_that_stay.push_back(person);
+        if (region_change == -1) 
+            people_to_prev_region->push_back(person);
+        if (region_change == 1)
+            people_to_next_region->push_back(person);
     }
-    std::sort(people_.begin(), people_.end());
+    people_ = people_that_stay; // Unsorted 
+    // Better not to sort it yet because we still need to receive from other regions
+    // std::sort(people_.begin(), people_.end());
+}
+
+void Region::addPeople(std::vector<Person> new_people) {
+    people_.reserve(new_people.size());
+    for (Person& person : new_people) {
+        people_.push_back(person);
+    }    
+    std::sort(people_.begin(), people_.end()); // O(n log n)
+
 }
 
 bool Region::updateStatus(std::default_random_engine *generator) {

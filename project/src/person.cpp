@@ -8,18 +8,33 @@ Person::Person(float pos_x, float pos_y) {
     y = pos_y;
 }
 
-void Person::move(std::default_random_engine *generator) {
+Person::Person(float pos_x, float pos_y, int status) {
+    GammaDistribution = std::gamma_distribution<float>(5.0, 2.0 / 3.0);
+    NormalDistribution = std::normal_distribution<float>(0.0, env::TIME_STEP/100);
+    UniformDistribution = std::uniform_real_distribution<float>(0.0, 1.0);
+    x = pos_x;
+    y = pos_y;
+    status_ = status;
+}
+
+
+int Person::move(std::default_random_engine *generator) {
     x += NormalDistribution(*generator)*env::SPEED;
     y += NormalDistribution(*generator)*env::SPEED;
-    //TODO REMOVE:
-    if (x > env::world_size_)
-        x -= env::world_size_;
+
+    // For now just exchange in x
     if (y > env::world_size_)
         y -= env::world_size_;
-    if (x < 0.0)
-        x += env::world_size_;
     if (y < 0.0)
         y += env::world_size_;
+
+    // Code to which area to move: 0: stay, -1: prev region, +1 nex region
+    int change_region = 0;
+    if (x > env::world_size_)
+        change_region = 1;
+    if (x < 0.0)
+        change_region = -1;
+    return change_region;
 }
 
 float Person::distanceSquaredTo(Person other) {

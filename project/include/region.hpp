@@ -13,7 +13,11 @@ class Region {
   public:
     Region(int people_num, int processor, int P, std::default_random_engine *generator);
 
-    void movePeople(std::default_random_engine *generator);
+    void movePeople(std::default_random_engine *generator,
+                    std::list<Person> *people_to_prev_region,
+                    std::list<Person> *people_to_next_region);
+
+    void addPeople(std::vector<Person> new_people);
 
     bool updateStatus(std::default_random_engine *generator);
 

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <list>
 #include <random>
 #include "mpi.h"
 
@@ -40,10 +41,20 @@ int main(int argc, char** argv) {
     int vis_freq = (int) (0.1/env::TIME_STEP); // Update every day
     std::cout << vis_freq << std::endl;
     for (float t = 0; t <= nrDays; t += env::TIME_STEP) {
-        region.movePeople(&generator);
-        //TODO: make sure people stay within borders, communication
+        std::list<Person> people_to_prev_region;
+        std::list<Person> people_to_next_region;
+        region.movePeople(&generator, &people_to_prev_region, &people_to_next_region);
+        std::cout << "p: " << p << ", prev: " << people_to_prev_region.size() << std::endl;
+        std::cout << "p: " << p << ", next: " << people_to_next_region.size() << std::endl;
+
+        std::vector<Person> incoming_people;
+        exchange_people(p, P, people_to_prev_region, people_to_prev_region, &incoming_people);
+        region.addPeople(incoming_people);
+        people_to_prev_region.clear()
+        people_to_next_region.clear()
+        incoming_people.clear();
+
         bool change = region.updateStatus(&generator);
-        
         if (change) {
             std::string Status = region.getStatus();
             msg << "p: " << p << ", t:" << t << ", Status: " << Status << std::endl;
