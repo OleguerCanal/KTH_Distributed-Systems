@@ -10,7 +10,7 @@ Person::Person(float pos_x, float pos_y) {
 
 Person::Person(float pos_x, float pos_y, int status) {
     GammaDistribution = std::gamma_distribution<float>(5.0, 2.0 / 3.0);
-    NormalDistribution = std::normal_distribution<float>(0.0, env::TIME_STEP/100);
+    NormalDistribution = std::normal_distribution<float>(0.0, env::TIME_STEP/50);
     UniformDistribution = std::uniform_real_distribution<float>(0.0, 1.0);
     x = pos_x;
     y = pos_y;

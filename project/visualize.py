@@ -25,6 +25,7 @@ class AnimatedScatter(object):
         Writer = animation.writers['ffmpeg']
         writer = Writer(fps=30, metadata=dict(artist='Me'), bitrate=1800)
         self.ani.save('evolution.mp4', writer=writer)
+        print("Saved")
         # self.ani.save('animation.gif', writer='imagemagick', fps=10)
         # self.ani.save('animation.gif', writer='imagemagick', fps=10)
 
@@ -33,7 +34,8 @@ class AnimatedScatter(object):
         x, y, s, c = next(self.stream).T
         self.scat = self.ax.scatter(x, y, c=c, s=s, vmin=0, vmax=1,
                                     cmap="RdYlGn")
-        # self.ax.axis([-10, 10, -10, 10])
+        self.ax.axis([0, 2, 0, 1])
+        self.ax.set_aspect('equal')
         # For FuncAnimation's sake, we need to return the artist we'll be using
         # Note that it expects a sequence of artists, thus the trailing comma.
         return self.scat,
@@ -73,15 +75,18 @@ class AnimatedScatter(object):
         x = []
         y = []
         status = []
-        for processor in line.split("|")[0:-1]:
-            for person in processor.split(";")[0:-1]:
-                person_info = person.split(",")
-                px = float(person_info[0])
-                py = float(person_info[1])
-                ps = int(person_info[2])
-                x.append(px)
-                y.append(py)
-                status.append(ps)
+        # for processor in line.split("|")[0:-1]:
+        processor = line.replace("|", "")
+        for person in processor.split(";")[0:-1]:
+            person_info = person.split(",")
+            px = float(person_info[0])
+            py = float(person_info[1])
+            ps = int(person_info[2])
+            # if px > 1:
+            #     print(px)
+            x.append(px)
+            y.append(py)
+            status.append(ps)
         return x, y, status
 
     def read_file(self, filepath = "evolution.txt"):
