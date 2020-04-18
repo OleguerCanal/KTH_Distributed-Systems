@@ -1,16 +1,16 @@
 #include<person.hpp>
 
 Person::Person(float pos_x, float pos_y) {
-    GammaDistribution = std::gamma_distribution<float>(5.0, 2.0 / 3.0);
-    NormalDistribution = std::normal_distribution<float>(0.0, env::TIME_STEP/100);
+    GammaDistribution = env::recovery_time_distrib;
+    NormalDistribution = env::movement_distrib;
     UniformDistribution = std::uniform_real_distribution<float>(0.0, 1.0);
     x = pos_x;
     y = pos_y;
 }
 
 Person::Person(float pos_x, float pos_y, int status) {
-    GammaDistribution = std::gamma_distribution<float>(5.0, 2.0 / 3.0);
-    NormalDistribution = std::normal_distribution<float>(0.0, env::TIME_STEP/50);
+    GammaDistribution = env::recovery_time_distrib;
+    NormalDistribution = env::movement_distrib;
     UniformDistribution = std::uniform_real_distribution<float>(0.0, 1.0);
     x = pos_x;
     y = pos_y;
@@ -56,6 +56,7 @@ bool Person::tryToInfect(std::default_random_engine *generator) {
 void Person::getInfected(std::default_random_engine *generator) {
     // NOTE Isnt this very low?? 0.01*5? We'll see in simulations ;)
     status_ = (int) (1/env::TIME_STEP * GammaDistribution(*generator));
+    std::cout << status_*env::TIME_STEP << std::endl;
 }
 
 int Person::beSick() {

@@ -13,7 +13,6 @@
 
 int main(int argc, char** argv) {
     int p, P;
-    int nrDays = 10;
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &P);
     MPI_Comm_rank(MPI_COMM_WORLD, &p);
@@ -22,8 +21,7 @@ int main(int argc, char** argv) {
     std::default_random_engine generator(time(0) + p * 1000);
 
     //todo: separate zone and create regions and people
-    int number_of_people = 100;
-    Region region(number_of_people, p, P, &generator);
+    Region region(env::number_of_people, p, P, &generator);
     if (p == 0) {
         Person* Mike = region.getRandomPerson();
         Mike->getInfected(&generator);
@@ -41,7 +39,7 @@ int main(int argc, char** argv) {
     int vis_freq = (int) (0.1/env::TIME_STEP); // Update every day
     std::cout << vis_freq << std::endl;
 
-    for (float t = 0; t <= nrDays; t += env::TIME_STEP) {
+    for (float t = 0; t <= env::nrDays; t += env::TIME_STEP) {
         std::list<Person> people_to_prev_region;
         std::list<Person> people_to_next_region;
         region.movePeople(&generator, &people_to_prev_region, &people_to_next_region);

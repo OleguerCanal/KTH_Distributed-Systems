@@ -49,7 +49,6 @@ bool Region::updateStatus(std::default_random_engine *generator) {
             if (person.beSick() == 0) {
                 change = true;
                 //people_.erase(*person);  //TODO
-                removedPeople_++;
                 //inactivePeople_.insert(person);
             } 
             else {
@@ -78,10 +77,14 @@ bool Region::updateStatus(std::default_random_engine *generator) {
 std::string Region::getStatus() {
     std::stringstream msg;
     int nbInfected = 0;
-    for (Person person : people_)
+    int nbSusceptibles = 0;
+    for (Person person : people_) {
         if (person.isInfected())
             nbInfected++;
-    msg << "S:" << people_.size() - nbInfected - removedPeople_ << " I:" << nbInfected << " R:" << removedPeople_;
+        if (person.isSusceptible())
+            nbSusceptibles++;
+    }
+    msg << "S:" << nbSusceptibles << " I:" << nbInfected << " R:" << people_.size()-nbInfected-nbSusceptibles;
     return msg.str();
 }
 

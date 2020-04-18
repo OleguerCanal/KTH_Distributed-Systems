@@ -38,7 +38,6 @@ class Region {
     std::vector<Person> people_;
     int p_;
     int P_;
-    int removedPeople_ = 0;
     
     //std::set<Person> inactivePeople_;
     std::uniform_real_distribution<float> UniformDistribution =
