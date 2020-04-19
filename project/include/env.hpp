@@ -1,11 +1,12 @@
 #pragma once
 #include <math.h>
+#include <string>
 
 namespace env {
     const float TIME_STEP = 0.0001;
-    const int nrDays = 30;
+    const int nrDays = 10;
     const float world_size_ = 1.0f;
-    const int processors_in_x_direction = 2.0;
+    const int processors_in_x_direction = 2;
     const int number_of_people = 100; // per region
 
     const float INFECTION_RATE = 0.001;// 0.00008;
@@ -22,22 +23,25 @@ namespace env {
         float upper;
         float lower;
 
-        boundary() {
-        }
+        boundary() {}
     };
 
     struct RegionCoordinates {
       public:
         int px, py, Px, Py, p, P;
+        std::string color;
         env::boundary bound;
 
-        RegionCoordinates(int processor, int Processors) : bound() {
+        RegionCoordinates(int processor, int Processors) {
             p = processor;
             P = Processors;
             px = p % env::processors_in_x_direction;
             py = p / env::processors_in_x_direction;
             Px = env::processors_in_x_direction;
             Py = P / env::processors_in_x_direction;
+
+            color = "red";
+            if (p%2 == 0) color = "black";
 
             bound.left = (env::world_size_ / (float)(Px)) * (float)(px);
             bound.right = (env::world_size_ / (float)(Px)) * (float)((px + 1));
@@ -50,11 +54,11 @@ namespace env {
         }
 
         int get_left_region_processor() {
-            return get_processor((px-1)%Px, py);
+            return get_processor((px+Px-1)%Px, py);  // I add P to make it cyclic
         }
 
         int get_above_region_processor() {
-            return get_processor(px, (py-1)%Py);
+            return get_processor(px, (py+Py-1)%Py);  // I add P to make it cyclic
         }
 
         int get_below_region_processor() {

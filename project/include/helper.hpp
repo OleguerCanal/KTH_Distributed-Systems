@@ -47,7 +47,7 @@ void send_people(int to, const std::list<Person> &people) {
         encoded_people[i+2] = (float) it->status_;
         i += 3;
     }
-    // std::cout << "sending size: " << ((float) size)/3.0 << ", to: " << to << std::endl;
+    std::cout << "sending size: " << ((float) size)/3.0 << ", to: " << to << std::endl;
     MPI_Send(&size,1,MPI::INT,to,0,MPI_COMM_WORLD); // Send number of people
     // std::cout << "sent size: " << ((float) size)/3.0 << ", to: " << to << std::endl;
     if (size == 0) return;
@@ -57,7 +57,7 @@ void send_people(int to, const std::list<Person> &people) {
 void receive_people(int from, std::vector<Person> *people) {
     MPI_Status status;
     int size;
-    // std::cout << "receiving from: " << from << std::endl;
+    std::cout << "receiving from: " << from << std::endl;
     MPI_Recv(&size,1,MPI::INT,from,0,MPI_COMM_WORLD, &status);
     // std::cout << "received size: " << ((float) size)/3.0 <<  ", from: " << from << std::endl;
     if (size == 0) return;
@@ -70,42 +70,62 @@ void receive_people(int from, std::vector<Person> *people) {
     }
 }
 
-void exchange_people(env::RegionCoordinates region_coordinates,
-                    std::list<Person> people_to_prev_region,
-                    std::list<Person> people_to_next_region,
+void exchange_people(env::RegionCoordinates r_coord,
+                    std::list<Person> people_to_left_region,
+                    std::list<Person> people_to_right_region,
                     std::list<Person> people_to_above_region,
                     std::list<Person> people_to_below_region,
                     std::vector<Person> *incoming_people) {
-    int p = region_coordinates.p;  // TODO(oleguer): Remove
-    int P = region_coordinates.P;
-    if (P == 1) return;
+    int p = r_coord.p;  // TODO(oleguer): Remove
+    int P = r_coord.P;
+    if (r_coord.P == 1) return;
     // TODO Case P%2 = 1
 
-    if (p == 0) {
-        for (Person& pers : people_to_prev_region)
+    // Update wolrd border people's coordinates
+    if (r_coord.px == 0) {
+        for (Person& pers : people_to_left_region)
             pers.x += env::world_size_;
     }
-    if (p == P-1) {
-        for (Person& pers : people_to_next_region)
+    if (r_coord.px == r_coord.Px-1) {
+        for (Person& pers : people_to_right_region)
             pers.x -= env::world_size_;
     }
+    if (r_coord.py == 0) {
+        for (Person& pers : people_to_below_region)
+            pers.y += env::world_size_;
+    }
+    if (r_coord.py == r_coord.Py-1) {
+        for (Person& pers : people_to_above_region)
+            pers.x -= env::world_size_;
+    }
+
     // Exchange 
-    if (p%2 == 0) {
-        // Exchange next
-        send_people((p+1)%P, people_to_next_region);
-        receive_people((p+1)%P, incoming_people);
-        // std::cout << p << ": first step ok" << std::endl;
-        // Exchange previous
-        send_people((p+P-1)%P, people_to_prev_region);  // I add P to make it cyclic
-        receive_people((p+P-1)%P, incoming_people);
+    if (r_coord.color == "black") {
+        // Exchange right
+        send_people(r_coord.get_right_region_processor(), people_to_right_region);
+        receive_people(r_coord.get_right_region_processor(), incoming_people);
+        // Exchange left
+        send_people(r_coord.get_left_region_processor(), people_to_left_region);
+        receive_people(r_coord.get_left_region_processor(), incoming_people);
+        // Exchange up
+        send_people(r_coord.get_above_region_processor(), people_to_above_region);
+        receive_people(r_coord.get_above_region_processor(), incoming_people);
+        // Exchange down
+        send_people(r_coord.get_below_region_processor(), people_to_below_region);
+        receive_people(r_coord.get_below_region_processor(), incoming_people);
     } else {
-        // Exchange previous
-        receive_people((p+P-1)%P, incoming_people);
-        send_people((p+P-1)%P, people_to_prev_region);
-        // std::cout << p << ": first step ok" << std::endl;
-        // Exchange next
-        receive_people((p+1)%P, incoming_people);
-        send_people((p+1)%P, people_to_next_region);
+        // Exchange left
+        receive_people(r_coord.get_left_region_processor(), incoming_people);
+        send_people(r_coord.get_left_region_processor(), people_to_left_region);
+        // Exchange right
+        receive_people(r_coord.get_right_region_processor(), incoming_people);
+        send_people(r_coord.get_right_region_processor(), people_to_right_region);
+        // Exchange down
+        receive_people(r_coord.get_below_region_processor(), incoming_people);
+        send_people(r_coord.get_below_region_processor(), people_to_below_region);
+        // Exchange up
+        receive_people(r_coord.get_above_region_processor(), incoming_people);
+        send_people(r_coord.get_above_region_processor(), people_to_above_region);        
     }
 
     // std::cout << "done" << std::endl;

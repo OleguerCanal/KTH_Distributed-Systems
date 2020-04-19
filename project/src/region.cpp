@@ -1,7 +1,7 @@
 #include <region.hpp>
 
-Region::Region(int people_num, env::boundary* boundary, std::default_random_engine *generator) {
-    Region::boundary = boundary;
+Region::Region(int people_num, env::boundary* bound, std::default_random_engine *generator) {
+    boundary = bound;
     // Instantiate all the people
     for (int i = 0; i < people_num; i++) {
         float pos_x = (boundary->right - boundary->left) * UniformDistribution(*generator) + boundary->left;
