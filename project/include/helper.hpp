@@ -70,20 +70,24 @@ void receive_people(int from, std::vector<Person> *people) {
     }
 }
 
-void exchange_people(int p, int P,
+void exchange_people(env::RegionCoordinates region_coordinates,
                     std::list<Person> people_to_prev_region,
                     std::list<Person> people_to_next_region,
+                    std::list<Person> people_to_above_region,
+                    std::list<Person> people_to_below_region,
                     std::vector<Person> *incoming_people) {
+    int p = region_coordinates.p;  // TODO(oleguer): Remove
+    int P = region_coordinates.P;
     if (P == 1) return;
     // TODO Case P%2 = 1
 
     if (p == 0) {
         for (Person& pers : people_to_prev_region)
-            pers.x += P * env::world_size_;
+            pers.x += env::world_size_;
     }
     if (p == P-1) {
         for (Person& pers : people_to_next_region)
-            pers.x -= P * env::world_size_;
+            pers.x -= env::world_size_;
     }
     // Exchange 
     if (p%2 == 0) {
@@ -103,5 +107,6 @@ void exchange_people(int p, int P,
         receive_people((p+1)%P, incoming_people);
         send_people((p+1)%P, people_to_next_region);
     }
+
     // std::cout << "done" << std::endl;
 }

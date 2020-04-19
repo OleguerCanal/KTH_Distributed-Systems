@@ -18,27 +18,45 @@ Person::Person(float pos_x, float pos_y, int status) {
 }
 
 
-int Person::move(std::default_random_engine *generator, int p) {
-    x += NormalDistribution(*generator)*env::SPEED;
-    y += NormalDistribution(*generator)*env::SPEED;
+void Person::move(std::default_random_engine* generator, env::boundary* boundary, int change_region[]) {
+    x += NormalDistribution(*generator) * env::SPEED;
+    y += NormalDistribution(*generator) * env::SPEED;
 
-    // For now just exchange in x
+    //TEMP
+
     if (y > env::world_size_)
-        y -= env::world_size_;
+        y = y - env::world_size_;
     if (y < 0.0)
-        y += env::world_size_;
+        y = y + env::world_size_;
+    if (y < 0.0 || y > env::world_size_)
+        std::cout << "PROBLEM";
+    change_region[0] = 0;
+    change_region[1] = 0;
 
     // Code to which area to move: 0: stay, -1: prev region and stay, +1 nex region and stay, -2 prev reg, 2 nex reg
-    int change_region = 0;
-    if (x > env::world_size_ - env::infection_distance_ + p * env::world_size_)
-        change_region = 1;
-    if (x > env::world_size_ + env::infection_distance_ + p * env::world_size_)
-        change_region = 2;
-    if (x < env::infection_distance_ + p * env::world_size_)
-        change_region = -1;
-    if (x < - env::infection_distance_ + p * env::world_size_)
-        change_region = -2;
-    return change_region;
+    if (x > boundary->right - env::infection_distance_) {
+        change_region[0] = 1;
+        if (x > boundary->right + env::infection_distance_)
+            change_region[0] = 2;
+    }
+    else if (x < env::infection_distance_ + boundary->left) {
+        change_region[0] = -1;
+        if (x < -env::infection_distance_ + boundary->left)
+            change_region[0] = -2;
+    }
+
+    // Code to which area to move: 0: stay, -1: prev region and stay, +1 nex region and stay, -2 prev reg, 2 nex reg
+    if (y > boundary->upper - env::infection_distance_) {
+        change_region[1] = 1;
+        if (y > boundary->upper + env::infection_distance_)
+            change_region[1] = 2;
+    }
+    else if (y < env::infection_distance_ + boundary->lower) {
+        change_region[1] = -1;
+        if (y < -env::infection_distance_ + boundary->lower)
+            change_region[1] = -2;
+    }
+    change_region[1] = 0;
 }
 
 float Person::distanceSquaredTo(Person other) {

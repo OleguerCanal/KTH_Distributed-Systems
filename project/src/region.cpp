@@ -1,12 +1,11 @@
 #include <region.hpp>
 
-Region::Region(int people_num, int processor, int P, std::default_random_engine *generator) {
-    p_ = processor;
-    P_ = P;
+Region::Region(int people_num, env::boundary* boundary, std::default_random_engine *generator) {
+    Region::boundary = boundary;
     // Instantiate all the people
     for (int i = 0; i < people_num; i++) {
-        float pos_x = env::world_size_ * UniformDistribution(*generator)+processor*env::world_size_;
-        float pos_y = env::world_size_ * UniformDistribution(*generator);
+        float pos_x = (boundary->right - boundary->left) * UniformDistribution(*generator) + boundary->left;
+        float pos_y = (boundary->upper - boundary->lower) * UniformDistribution(*generator) + boundary->lower;
         people_.emplace_back(Person(pos_x, pos_y));
     }
     std::sort(people_.begin(), people_.end());
@@ -14,17 +13,27 @@ Region::Region(int people_num, int processor, int P, std::default_random_engine 
 
 void Region::movePeople(std::default_random_engine *generator,
                         std::list<Person> *people_to_prev_region,
-                        std::list<Person> *people_to_next_region) {
+                        std::list<Person> *people_to_next_region,
+                        std::list<Person>* people_to_above_region,
+                        std::list<Person>* people_to_below_region) {
     std::vector<Person> people_that_stay;
     people_that_stay.reserve(people_.size());  // Avoid relocation O(n)
+    int region_change[] = { 0,0 };
     for (Person& person : people_) {  // O(n)
-        int region_change = person.move(generator,p_);
-        if (region_change >= -1 && region_change <= 1)
+        person.move(generator,boundary, region_change);
+
+        //Diagonal should only send to one
+
+        if (region_change[0] >= -1 && region_change[0] <= 1 && region_change[1] >= -1 && region_change[1] <= 1)
             people_that_stay.push_back(person);
-        if (region_change <= -1) 
+        if (region_change[0] <= -1)
             people_to_prev_region->push_back(person);
-        if (region_change >= 1)
+        if (region_change[0] >= 1)
             people_to_next_region->push_back(person);
+        if (region_change[1] <= -1)
+            people_to_above_region->push_back(person);
+        if (region_change[1] >= 1)
+            people_to_below_region->push_back(person);
     }
     people_ = people_that_stay; // Unsorted 
     // Better not to sort it yet because we still need to receive from other regions
@@ -88,16 +97,14 @@ std::string Region::getStatus() {
     return msg.str();
 }
 
-void Region::getPeopleBorder(int border) {
-    //TODO: returns all people at env::infection_distance_/2 of the border
-}
-
-void Region::deleteSidePeople() {
+bool Region::deleteSidePeople() {
     std::vector<Person> people_that_stay;
+    int nbPeople = people_.size();
     for (Person& person : people_)
-        if (person.x < env::world_size_+ p_*env::world_size_ && person.x > p_ * env::world_size_)
+        if (person.x > boundary->left && person.x < boundary->right && person.y < boundary->upper && person.y > boundary->lower)
             people_that_stay.push_back(person);
     people_ = people_that_stay;
+    return (nbPeople != people_.size());
 }
 
 Person * Region::getRandomPerson() {

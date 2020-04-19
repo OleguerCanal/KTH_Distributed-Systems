@@ -11,11 +11,13 @@
 
 class Region {
   public:
-    Region(int people_num, int processor, int P, std::default_random_engine *generator);
+    Region(int people_num, env::boundary* boundary, std::default_random_engine *generator);
 
     void movePeople(std::default_random_engine *generator,
                     std::list<Person> *people_to_prev_region,
-                    std::list<Person> *people_to_next_region);
+                    std::list<Person> *people_to_next_region,
+                    std::list<Person>* people_to_above_region,
+                    std::list<Person>* people_to_below_region);
 
     void addPeople(std::vector<Person> new_people);
 
@@ -23,9 +25,7 @@ class Region {
 
     std::string getStatus();
 
-    void getPeopleBorder(int border);
-
-    void deleteSidePeople();
+    bool deleteSidePeople();
 
     Person *getRandomPerson();
      
@@ -35,9 +35,8 @@ class Region {
     void print();
 
   private:
+    env::boundary* boundary;
     std::vector<Person> people_;
-    int p_;
-    int P_;
     
     //std::set<Person> inactivePeople_;
     std::uniform_real_distribution<float> UniformDistribution =
