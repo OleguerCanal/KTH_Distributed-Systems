@@ -44,7 +44,7 @@ void Person::move(std::default_random_engine* generator, env::boundary* boundary
         if (x < -env::infection_distance_ + boundary->left)
             change_region[0] = -2;
     }
-
+    //TODO : don't send diagonal in y
     // Code to which area to move: 0: stay, -1: prev region and stay, +1 nex region and stay, -2 prev reg, 2 nex reg
     if (y > boundary->upper - env::infection_distance_) {
         change_region[1] = 1;
