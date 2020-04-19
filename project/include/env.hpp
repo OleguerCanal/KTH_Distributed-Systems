@@ -1,7 +1,8 @@
 #pragma once
 #include <math.h>
 #include <string>
-
+#include <stdlib.h>
+#include <sstream>
 namespace env {
     const float TIME_STEP = 0.0001;
     const int nrDays = 10;
@@ -41,7 +42,7 @@ namespace env {
             Py = P / env::processors_in_x_direction;
 
             color = "red";
-            if (p%2 == 0) color = "black";
+            if ((px + py)%2 == 0) color = "black";
 
             bound.left = (env::world_size_ / (float)(Px)) * (float)(px);
             bound.right = (env::world_size_ / (float)(Px)) * (float)((px + 1));
@@ -63,6 +64,12 @@ namespace env {
 
         int get_below_region_processor() {
             return get_processor(px, (py+1)%Py);
+        }
+
+        std::string get_info() {
+            std::stringstream msg;
+            msg << "px:" << px << ", py:" << py << " (" << "p:" << p << ", P:" << P << ", Px:" << Px << ", Py:" << Py << ") " << color;
+            return msg.str();
         }
     
       private:

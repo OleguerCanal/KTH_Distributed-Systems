@@ -47,7 +47,7 @@ void send_people(int to, const std::list<Person> &people) {
         encoded_people[i+2] = (float) it->status_;
         i += 3;
     }
-    std::cout << "sending size: " << ((float) size)/3.0 << ", to: " << to << std::endl;
+    // std::cout << "sending size: " << ((float) size)/3.0 << ", to: " << to << std::endl;
     MPI_Send(&size,1,MPI::INT,to,0,MPI_COMM_WORLD); // Send number of people
     // std::cout << "sent size: " << ((float) size)/3.0 << ", to: " << to << std::endl;
     if (size == 0) return;
@@ -57,7 +57,7 @@ void send_people(int to, const std::list<Person> &people) {
 void receive_people(int from, std::vector<Person> *people) {
     MPI_Status status;
     int size;
-    std::cout << "receiving from: " << from << std::endl;
+    // std::cout << "receiving from: " << from << std::endl;
     MPI_Recv(&size,1,MPI::INT,from,0,MPI_COMM_WORLD, &status);
     // std::cout << "received size: " << ((float) size)/3.0 <<  ", from: " << from << std::endl;
     if (size == 0) return;

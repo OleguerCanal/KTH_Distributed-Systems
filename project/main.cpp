@@ -24,6 +24,8 @@ int main(int argc, char** argv) {
         return -1;
     }
     env::RegionCoordinates region_coordinates(p, P);
+    std::string region_coord_info = region_coordinates.get_info();
+    std::cout << region_coord_info << std::endl;
 
     //todo: separate zone and create regions and people
     Region region(env::number_of_people, &region_coordinates.bound, &generator);
