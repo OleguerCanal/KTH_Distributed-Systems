@@ -17,10 +17,13 @@ namespace env {
     const std::normal_distribution<float> movement_distrib = std::normal_distribution<float>(0.0, env::TIME_STEP / 100);
 
     struct boundary {
-        const float left;
-        const float right;
-        const float upper;
-        const float lower;
+        float left;
+        float right;
+        float upper;
+        float lower;
+
+        boundary() {
+        }
     };
 
     struct RegionCoordinates {
@@ -28,7 +31,7 @@ namespace env {
         int px, py, Px, Py, p, P;
         env::boundary bound;
 
-        RegionCoordinates(int processor, int Processors) {
+        RegionCoordinates(int processor, int Processors) : bound() {
             p = processor;
             P = Processors;
             px = p % env::processors_in_x_direction;
@@ -36,12 +39,10 @@ namespace env {
             Px = env::processors_in_x_direction;
             Py = P / env::processors_in_x_direction;
 
-            boundary = {
-                (env::world_size_ / (float)(Px)) * (float)(px), //boundary.left
-                (env::world_size_ / (float)(Px)) * (float)((px + 1)), //boundary.right
-                (env::world_size_ / (float)(Py)) * (float)((py + 1)), //boundary.upper
-                (env::world_size_ / (float)(Py)) * (float)(py) //boundary.lower 
-            };
+            bound.left = (env::world_size_ / (float)(Px)) * (float)(px);
+            bound.right = (env::world_size_ / (float)(Px)) * (float)((px + 1));
+            bound.upper = (env::world_size_ / (float)(Py)) * (float)((py + 1));
+            bound.lower = (env::world_size_ / (float)(Py)) * (float)(py);
         }
 
         int get_right_region_processor() {
