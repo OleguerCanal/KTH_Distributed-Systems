@@ -51,6 +51,7 @@ int main(int argc, char** argv) {
         std::list<Person> people_to_next_region;
         std::list<Person> people_to_above_region;
         std::list<Person> people_to_below_region;
+        // std::cout << people_to_above_region.size() << std::endl;
         region.movePeople(&generator, &people_to_prev_region, &people_to_next_region, &people_to_above_region, &people_to_below_region);
         //std::cout << "p: " << p << ", prev: " << people_to_prev_region.size() << std::endl;
         //std::cout << "p: " << p << ", next: " << people_to_next_region.size() << std::endl;

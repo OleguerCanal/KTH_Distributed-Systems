@@ -96,7 +96,7 @@ void exchange_people(env::RegionCoordinates r_coord,
     }
     if (r_coord.py == r_coord.Py-1) {
         for (Person& pers : people_to_above_region)
-            pers.x -= env::world_size_;
+            pers.y -= env::world_size_;
     }
 
     // Exchange 

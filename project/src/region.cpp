@@ -31,9 +31,9 @@ void Region::movePeople(std::default_random_engine *generator,
         if (region_change[0] >= 1)
             people_to_next_region->push_back(person);
         if (region_change[1] <= -1)
-            people_to_above_region->push_back(person);
-        if (region_change[1] >= 1)
             people_to_below_region->push_back(person);
+        if (region_change[1] >= 1)
+            people_to_above_region->push_back(person);
     }
     people_ = people_that_stay; // Unsorted 
     // Better not to sort it yet because we still need to receive from other regions

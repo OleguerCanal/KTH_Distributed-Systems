@@ -24,12 +24,12 @@ void Person::move(std::default_random_engine* generator, env::boundary* boundary
 
     //TEMP
 
-    if (y > env::world_size_)
-        y = y - env::world_size_;
-    if (y < 0.0)
-        y = y + env::world_size_;
-    if (y < 0.0 || y > env::world_size_)
-        std::cout << "PROBLEM";
+    // if (y > env::world_size_)
+    //     y = y - env::world_size_;
+    // if (y < 0.0)
+    //     y = y + env::world_size_;
+    // if (y < 0.0 || y > env::world_size_)
+    //     std::cout << "PROBLEM";
     change_region[0] = 0;
     change_region[1] = 0;
 
@@ -51,12 +51,12 @@ void Person::move(std::default_random_engine* generator, env::boundary* boundary
         if (y > boundary->upper + env::infection_distance_)
             change_region[1] = 2;
     }
-    else if (y < env::infection_distance_ + boundary->lower) {
+    else if (y < boundary->lower + env::infection_distance_) {
         change_region[1] = -1;
-        if (y < -env::infection_distance_ + boundary->lower)
+        if (y < boundary->lower - env::infection_distance_)
             change_region[1] = -2;
     }
-    change_region[1] = 0;
+    // change_region[1] = 0;
 }
 
 float Person::distanceSquaredTo(Person other) {
