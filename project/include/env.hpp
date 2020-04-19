@@ -9,8 +9,8 @@ namespace env {
     const int processors_in_x_direction = 2;
     const int number_of_people = 100; // per region
 
-    const float INFECTION_RATE = 0.001;// 0.00008;
-    const float SPEED = 1000.0;
+    const float INFECTION_RATE = 0.0001;// 0.00008;
+    const float SPEED = 1000;
     const float infection_distance_ = 0.05;
     const float infection_distance_squared_ = infection_distance_ * infection_distance_;
 
@@ -46,7 +46,7 @@ namespace env {
             bound.left = (env::world_size_ / (float)(Px)) * (float)(px);
             bound.right = (env::world_size_ / (float)(Px)) * (float)((px + 1));
             bound.upper = (env::world_size_ / (float)(Py)) * (float)((py + 1));
-            bound.lower = (env::world_size_ / (float)(Py)) * (float)(py);
+            bound.lower = (env::world_size_ / (float)(Py)) * (float)((py));
         }
 
         int get_right_region_processor() {

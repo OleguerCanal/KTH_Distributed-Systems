@@ -57,14 +57,16 @@ int main(int argc, char** argv) {
         exchange_people(region_coordinates, people_to_prev_region, people_to_next_region, people_to_above_region, people_to_below_region, &incoming_people);
 
         region.addPeople(incoming_people);
-        bool change = (incoming_people.size() > 0);
         people_to_prev_region.clear();
         people_to_next_region.clear();
+        people_to_above_region.clear();
+        people_to_below_region.clear();
+        bool change1 = (incoming_people.size() > 0);
         incoming_people.clear();
-        //change = change || region.updateStatus(&generator);
-        change = change || region.deleteSidePeople();
+        bool change2 = region.updateStatus(&generator);
+        change1 = change1 | region.deleteSidePeople();
 
-        if (change) {
+        if (change2) {
             std::string Status = region.getStatus();
             msg << "p: " << p << ", t:" << t << ", Status: " << Status << std::endl;
             std::cout << msg.str();
