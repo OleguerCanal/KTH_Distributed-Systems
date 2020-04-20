@@ -60,6 +60,16 @@ int main(int argc, char** argv) {
         exchange_people(region_coordinates, people_to_prev_region, people_to_next_region, people_to_above_region, people_to_below_region, &incoming_people);
 
         region.addPeople(incoming_people);
+
+        //std::cout.precision(16);
+        //for (Person& person : people_to_next_region)
+        //    if (person.x > region_coordinates.bound.right || person.x < region_coordinates.bound.left)
+        //        std::cout << person.x << "," << person.y << "," << p << t << "," << (person.x - 1) << std::endl;
+        //for (Person& person : people_to_prev_region)
+        //    if (person.x > region_coordinates.bound.right || person.x < region_coordinates.bound.left)
+        //        std::cout << person.x << "," << person.y << "," << p << t << "," << (person.x + 1) <<std::endl;
+        //std::cout.precision(3);
+
         people_to_prev_region.clear();
         people_to_next_region.clear();
         people_to_above_region.clear();

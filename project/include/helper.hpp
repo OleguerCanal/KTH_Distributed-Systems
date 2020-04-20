@@ -90,14 +90,6 @@ void exchange_people(env::RegionCoordinates r_coord,
         for (Person& pers : people_to_right_region)
             pers.x -= env::world_size_;
     }
-    if (r_coord.py == 0) {
-        for (Person& pers : people_to_below_region)
-            pers.y += env::world_size_;
-    }
-    if (r_coord.py == r_coord.Py-1) {
-        for (Person& pers : people_to_above_region)
-            pers.y -= env::world_size_;
-    }
 
     // Exchange 
     if (r_coord.color == "black") {
@@ -107,25 +99,48 @@ void exchange_people(env::RegionCoordinates r_coord,
         // Exchange left
         send_people(r_coord.get_left_region_processor(), people_to_left_region);
         receive_people(r_coord.get_left_region_processor(), incoming_people);
-        // Exchange up
-        send_people(r_coord.get_above_region_processor(), people_to_above_region);
-        receive_people(r_coord.get_above_region_processor(), incoming_people);
-        // Exchange down
-        send_people(r_coord.get_below_region_processor(), people_to_below_region);
-        receive_people(r_coord.get_below_region_processor(), incoming_people);
     } else {
         // Exchange left
         receive_people(r_coord.get_left_region_processor(), incoming_people);
         send_people(r_coord.get_left_region_processor(), people_to_left_region);
         // Exchange right
         receive_people(r_coord.get_right_region_processor(), incoming_people);
-        send_people(r_coord.get_right_region_processor(), people_to_right_region);
+        send_people(r_coord.get_right_region_processor(), people_to_right_region);   
+    }
+
+    for (Person& pers : *incoming_people) {
+        if (pers.y < r_coord.bound.lower + env::infection_distance_)
+            people_to_below_region.push_back(pers);
+        if (pers.y > r_coord.bound.upper - env::infection_distance_)
+            people_to_above_region.push_back(pers);
+    }
+
+    if (r_coord.py == 0) {
+        for (Person& pers : people_to_below_region)
+            pers.y += env::world_size_;
+    }
+    if (r_coord.py == r_coord.Py - 1) {
+        for (Person& pers : people_to_above_region)
+            pers.y -= env::world_size_;
+    }
+
+
+    // Exchange 
+    if (r_coord.color == "black") {
+        // Exchange up
+        send_people(r_coord.get_above_region_processor(), people_to_above_region);
+        receive_people(r_coord.get_above_region_processor(), incoming_people);
+        // Exchange down
+        send_people(r_coord.get_below_region_processor(), people_to_below_region);
+        receive_people(r_coord.get_below_region_processor(), incoming_people);
+    }
+    else {
         // Exchange down
         receive_people(r_coord.get_below_region_processor(), incoming_people);
         send_people(r_coord.get_below_region_processor(), people_to_below_region);
         // Exchange up
         receive_people(r_coord.get_above_region_processor(), incoming_people);
-        send_people(r_coord.get_above_region_processor(), people_to_above_region);        
+        send_people(r_coord.get_above_region_processor(), people_to_above_region);
     }
 
     // std::cout << "done" << std::endl;
