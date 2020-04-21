@@ -16,24 +16,28 @@ void Region::movePeople(std::default_random_engine *generator,
                         std::list<Person> *people_to_prev_region,
                         std::list<Person> *people_to_next_region,
                         std::list<Person>* people_to_above_region,
-                        std::list<Person>* people_to_below_region) {
+                        std::list<Person>* people_to_below_region,
+                        std::vector<Person>* border_people) {
     std::vector<Person> people_that_stay;
     people_that_stay.reserve(people_.size());  // Avoid relocation O(n)
-    int region_change[] = { 0,0 };
     for (Person& person : people_) {  // O(n)
-        person.move(generator,boundary, region_change);
+        person.move(generator,boundary);
 
-        //Diagonal should only send to one
-
-        if (region_change[0] >= -1 && region_change[0] <= 1 && region_change[1] >= -1 && region_change[1] <= 1)
-            people_that_stay.push_back(person);
-        if (region_change[0] <= -1)
+        if (person.x < boundary->right + env::infection_distance_ && person.x > boundary->left - env::infection_distance_ &&
+            person.y < boundary->upper + env::infection_distance_ && person.y > boundary->lower - env::infection_distance_)
+            if (person.x < boundary->right && person.x > boundary->left &&
+                person.y < boundary->upper && person.y > boundary->lower)
+                people_that_stay.push_back(person);
+            else
+                border_people->push_back(person);
+                
+        if (person.x < boundary->left + env::infection_distance_ && (person.isInfected() || person.x < boundary->left))
             people_to_prev_region->push_back(person);
-        if (region_change[0] >= 1)
+        if (person.x > boundary->right - env::infection_distance_ && (person.isInfected() || person.x > boundary->right))
             people_to_next_region->push_back(person);
-        if (region_change[1] <= -1)
+        if (person.y < boundary->lower + env::infection_distance_ && (person.isInfected() || person.y < boundary->lower))
             people_to_below_region->push_back(person);
-        if (region_change[1] >= 1)
+        if (person.y > boundary->upper - env::infection_distance_ && (person.isInfected() || person.y > boundary->upper))
             people_to_above_region->push_back(person);
     }
     people_ = people_that_stay; // Unsorted 
@@ -50,10 +54,11 @@ void Region::addPeople(std::vector<Person> new_people) {
 
 }
 
-bool Region::updateStatus(std::default_random_engine *generator) {
+bool Region::updateStatus(std::default_random_engine *generator, std::vector<Person>* border_people) {
     // Returns total number of infected people
     bool change = false;
     std::list<Person*> recentPeople = {};
+    std::vector<Person>::iterator border_start = border_people->begin();
     for (Person& person : people_) {
         if (person.isInfected()) {
             if (person.beSick() == 0) {
@@ -70,10 +75,33 @@ bool Region::updateStatus(std::default_random_engine *generator) {
         } 
         if (person.isSusceptible()) {
             for (Person* person2 : recentPeople) {
-                if ((person.distanceSquaredTo(*person2) < env::infection_distance_squared_) && person2->isInfected())
-                    change |= person.tryToInfect(generator);
+                if ((person.distanceSquaredTo(*person2) < env::infection_distance_squared_) && person2->isInfected()) {
+                    bool inf = person.tryToInfect(generator);
+                    if (inf) {
+                        change = true;
+                        break;
+                    }
+                }
             }
         }
+
+        if (person.isSusceptible()) { //Is still susceptible (don't re-infect)
+            if (border_start != border_people->end()) {
+                auto border_iterator = border_start;
+                while (person.x > (*border_iterator).x - env::infection_distance_) {
+                    if (person.distanceSquaredTo(*border_iterator) < env::infection_distance_squared_) {
+                        bool inf = person.tryToInfect(generator);
+                        if (inf) {
+                            change = true;
+                            break;
+                        }
+                    }
+                    if (border_iterator++ == border_people->end())
+                        break;
+                }
+            }
+        }
+        //TODO advance pointer border_start
 
         while ((recentPeople.size() > 0) && ((person.x - (*recentPeople.begin())->x) >  env::infection_distance_))
             recentPeople.pop_front();

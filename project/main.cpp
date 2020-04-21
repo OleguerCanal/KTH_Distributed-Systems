@@ -11,17 +11,33 @@
 #include <helper.hpp>
 
 
+void printStatus(Region &region, float t) {
+    std::stringstream msg;
+    msg << "p: " << region.coordinates->p << ", t:" << t << ", Status: " << region.getStatus() << std::endl;
+    std::cout << msg.str();
+}
+
 bool communicate(Region *region, std::default_random_engine *generator) {
     // Exhanges people with other regions
     std::list<Person> people_to_prev_region;
     std::list<Person> people_to_next_region;
     std::list<Person> people_to_above_region;
     std::list<Person> people_to_below_region;
-    region->movePeople(generator, &people_to_prev_region, &people_to_next_region, &people_to_above_region, &people_to_below_region);
     std::vector<Person> incoming_people;
+    std::vector<Person> immigrent_people;
+    std::vector<Person> border_people;
+    region->movePeople(generator, &people_to_prev_region, &people_to_next_region, &people_to_above_region, &people_to_below_region, &border_people);
     exchange_people(*(region->coordinates), people_to_prev_region, people_to_next_region, people_to_above_region, people_to_below_region, &incoming_people);
-    region->addPeople(incoming_people);
-    return (incoming_people.size() > 0);
+    for (Person person : incoming_people) {
+        if (person.x < region->coordinates->bound.right && person.x > region->coordinates->bound.left &&
+            person.y < region->coordinates->bound.upper && person.y > region->coordinates->bound.lower)
+            immigrent_people.push_back(person);
+        else
+            border_people.push_back(person);
+    }
+    std::sort(border_people.begin(), border_people.end());
+    region->addPeople(immigrent_people);
+    bool change = region->updateStatus(generator,&border_people);
 }
 
 int main(int argc, char** argv) {
@@ -29,6 +45,7 @@ int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &P);
     MPI_Comm_rank(MPI_COMM_WORLD, &p);
+    std::cout.precision(3);
 
     std::default_random_engine generator(time(0) + p * 1000);
     if (P % env::processors_in_x_direction != 0) {
@@ -44,35 +61,21 @@ int main(int argc, char** argv) {
         Mike->getInfected(&generator);
     }
 
-    std::stringstream msg;
-    std::string Status = region.getStatus();
-    std::cout.precision(3);
-    msg << "p" << p << " t" << -1 << ": " << Status << std::endl;
-    std::cout << msg.str();
-    msg.str(""); 
+    printStatus(region, -1);
 
     int iteration = 0;
     int vis_freq = (int) (0.1/env::TIME_STEP); // Update every day
-
     for (float t = 0; t <= env::nrDays; t += env::TIME_STEP) {
-        bool change1 = communicate(&region, &generator);
-        bool change2 = region.updateStatus(&generator);
+        bool change = communicate(&region, &generator);
 
-        change1 = change1 | region.deleteSidePeople();
-
-        if (change2)
-            std::cout << "p: " << p << ", t:" << t << ", Status: " << region.getStatus() << std::endl;
-
-        if (iteration%vis_freq == 0) {
+        if (change || ((int) (t*10000))%10000==0)
+            printStatus(region, t);
+        
+        if (iteration%vis_freq == 0)
             print_to_file(region, p, P);
-        }
         iteration += 1;
     }
-
-    Status = region.getStatus();
-    msg << "Fp: " << p << ",        Status: " << Status << std::endl;
-    std::cout << msg.str();
-    msg.str("");
+    printStatus(region, -1);
     std::cout << "iterations: " << iteration << std::endl;
     std::cout << p << ", " << P << std::endl;
     MPI_Finalize();

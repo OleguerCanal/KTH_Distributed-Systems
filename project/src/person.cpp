@@ -18,46 +18,9 @@ Person::Person(float pos_x, float pos_y, int status) {
 }
 
 
-void Person::move(std::default_random_engine* generator, env::boundary* boundary, int change_region[]) {
+void Person::move(std::default_random_engine* generator, env::boundary* boundary) {
     x += NormalDistribution(*generator) * env::SPEED;
     y += NormalDistribution(*generator) * env::SPEED;
-
-    //TEMP
-
-    // if (y > env::world_size_)
-    //     y = y - env::world_size_;
-    // if (y < 0.0)
-    //     y = y + env::world_size_;
-    // if (y < 0.0 || y > env::world_size_)
-    //     std::cout << "PROBLEM";
-    change_region[0] = 0;
-    change_region[1] = 0;
-
-    // Code to which area to move: 0: stay, -1: prev region and stay, +1 nex region and stay, -2 prev reg, 2 nex reg
-    if (x > boundary->right - env::infection_distance_) {
-        change_region[0] = 1;
-        if (x > boundary->right + env::infection_distance_)
-            change_region[0] = 2;
-    }
-    else if (x < env::infection_distance_ + boundary->left) {
-        change_region[0] = -1;
-        if (x < -env::infection_distance_ + boundary->left)
-            change_region[0] = -2;
-    }
-
-    //TODO : don't send diagonal in y
-    // Code to which area to move: 0: stay, -1: prev region and stay, +1 nex region and stay, -2 prev reg, 2 nex reg
-    if (y > boundary->upper - env::infection_distance_) {
-        change_region[1] = 1;
-        if (y > boundary->upper + env::infection_distance_)
-            change_region[1] = 2;
-    }
-    else if (y < boundary->lower + env::infection_distance_) {
-        change_region[1] = -1;
-        if (y < boundary->lower - env::infection_distance_)
-            change_region[1] = -2;
-    }
-    // change_region[1] = 0;
 }
 
 float Person::distanceSquaredTo(Person other) {
@@ -75,7 +38,7 @@ bool Person::tryToInfect(std::default_random_engine *generator) {
 void Person::getInfected(std::default_random_engine *generator) {
     // NOTE Isnt this very low?? 0.01*5? We'll see in simulations ;)
     status_ = (int) (1/env::TIME_STEP * GammaDistribution(*generator));
-    std::cout << status_*env::TIME_STEP << std::endl;
+    //std::cout << status_*env::TIME_STEP << std::endl;
 }
 
 int Person::beSick() {
