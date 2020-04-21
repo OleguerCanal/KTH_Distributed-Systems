@@ -24,20 +24,21 @@ bool communicate(Region *region, std::default_random_engine *generator) {
     std::list<Person> people_to_above_region;
     std::list<Person> people_to_below_region;
     std::vector<Person> incoming_people;
-    std::vector<Person> immigrent_people;
+    std::vector<Person> immigrant_people;
     std::vector<Person> border_people;
     region->movePeople(generator, &people_to_prev_region, &people_to_next_region, &people_to_above_region, &people_to_below_region, &border_people);
     exchange_people(*(region->coordinates), people_to_prev_region, people_to_next_region, people_to_above_region, people_to_below_region, &incoming_people);
     for (Person person : incoming_people) {
-        if (person.x < region->coordinates->bound.right && person.x > region->coordinates->bound.left &&
-            person.y < region->coordinates->bound.upper && person.y > region->coordinates->bound.lower)
-            immigrent_people.push_back(person);
+        if (person.x <= region->coordinates->bound.right && person.x >= region->coordinates->bound.left &&
+            person.y <= region->coordinates->bound.upper && person.y >= region->coordinates->bound.lower)
+            immigrant_people.push_back(person);
         else
             border_people.push_back(person);
     }
     std::sort(border_people.begin(), border_people.end());
-    region->addPeople(immigrent_people);
+    region->addPeople(immigrant_people);
     bool change = region->updateStatus(generator,&border_people);
+    return change;
 }
 
 int main(int argc, char** argv) {
@@ -45,9 +46,10 @@ int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &P);
     MPI_Comm_rank(MPI_COMM_WORLD, &p);
-    std::cout.precision(3);
+    std::cout.precision(6);
 
-    std::default_random_engine generator(time(0) + p * 1000);
+    // std::default_random_engine generator(time(0) + p * 1000);
+    std::default_random_engine generator(1);
     if (P % env::processors_in_x_direction != 0) {
         MPI_Finalize();
         return -1;
@@ -66,7 +68,15 @@ int main(int argc, char** argv) {
     int iteration = 0;
     int vis_freq = (int) (0.1/env::TIME_STEP); // Update every day
     for (float t = 0; t <= env::nrDays; t += env::TIME_STEP) {
+
+        int n_people = region.people_.size();
         bool change = communicate(&region, &generator);
+
+        if (n_people != region.people_.size()) {
+
+            std::cout << "ERROR at t=" << t << std::endl;
+            break;
+        }
 
         if (change || ((int) (t*10000))%10000==0)
             printStatus(region, t);

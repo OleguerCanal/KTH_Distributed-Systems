@@ -18,7 +18,7 @@ Person::Person(float pos_x, float pos_y, int status) {
 }
 
 
-void Person::move(std::default_random_engine* generator, env::boundary* boundary) {
+void Person::move(std::default_random_engine* generator) {
     x += NormalDistribution(*generator) * env::SPEED;
     y += NormalDistribution(*generator) * env::SPEED;
 }

@@ -34,12 +34,12 @@ class Region {
      
     std::string get_serialized_people();
     
-    
     void print();
+
+    std::vector<Person> people_;
 
   private:
     env::boundary* boundary;
-    std::vector<Person> people_;
     
     //std::set<Person> inactivePeople_;
     std::uniform_real_distribution<float> UniformDistribution =

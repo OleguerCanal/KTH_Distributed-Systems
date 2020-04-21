@@ -15,7 +15,7 @@ class Person {
     Person(float pos_x, float pos_y, int status);
     ~Person(){}
 
-    void move(std::default_random_engine *generator, env::boundary*);
+    void move(std::default_random_engine *generator);
 
     float distanceSquaredTo(Person other);
 

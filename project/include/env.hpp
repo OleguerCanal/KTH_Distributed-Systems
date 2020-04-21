@@ -5,10 +5,10 @@
 #include <sstream>
 namespace env {
     const float TIME_STEP = 0.0001;
-    const int nrDays = 10;
-    const float world_size_ = 1.0f;
-    const int processors_in_x_direction = 2;
-    const int number_of_people = 10; // per region
+    const int nrDays = 20;
+    const float world_size_ = 2.0f;
+    const int processors_in_x_direction = 1;
+    const int number_of_people = 1000; // per region
 
     const float INFECTION_RATE = 0.00008;// 0.00008;
     const float SPEED = 10;
