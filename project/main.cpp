@@ -52,14 +52,28 @@ int main(int argc, char** argv) {
         std::list<Person> people_to_above_region;
         std::list<Person> people_to_below_region;
         // std::cout << people_to_above_region.size() << std::endl;
-        region.movePeople(&generator, &people_to_prev_region, &people_to_next_region, &people_to_above_region, &people_to_below_region);
+
+        std::vector<Person> incoming_people;
+        std::vector<Person> immigrent_people;
+        std::vector<Person> border_people;
+        region.movePeople(&generator, &people_to_prev_region, &people_to_next_region, &people_to_above_region, &people_to_below_region, &border_people);
         //std::cout << "p: " << p << ", prev: " << people_to_prev_region.size() << std::endl;
         //std::cout << "p: " << p << ", next: " << people_to_next_region.size() << std::endl;
 
-        std::vector<Person> incoming_people;
         exchange_people(region_coordinates, people_to_prev_region, people_to_next_region, people_to_above_region, people_to_below_region, &incoming_people);
 
-        region.addPeople(incoming_people);
+
+        for (Person person : incoming_people) {
+            if (person.x < region_coordinates.bound.right && person.x > region_coordinates.bound.left &&
+                person.y < region_coordinates.bound.upper && person.y > region_coordinates.bound.lower)
+                immigrent_people.push_back(person);
+            else
+                border_people.push_back(person);
+        }
+
+        std::sort(border_people.begin(), border_people.end());
+        region.addPeople(immigrent_people);
+        bool change = region.updateStatus(&generator,&border_people);
 
         //std::cout.precision(16);
         //for (Person& person : people_to_next_region)
@@ -68,18 +82,22 @@ int main(int argc, char** argv) {
         //for (Person& person : people_to_prev_region)
         //    if (person.x > region_coordinates.bound.right || person.x < region_coordinates.bound.left)
         //        std::cout << person.x << "," << person.y << "," << p << t << "," << (person.x + 1) <<std::endl;
+
+        //for (Person& person : incoming_people) {
+        //    if ((person.x > region_coordinates.bound.right - env::infection_distance_ && person.x < region_coordinates.bound.right) || (person.x < region_coordinates.bound.left + env::infection_distance_ && person.x > region_coordinates.bound.left))
+        //        std::cout << "I" << person.x << "," << person.y << "," << p << t << "," << (person.x - 1) << std::endl;
+        //}
         //std::cout.precision(3);
 
         people_to_prev_region.clear();
         people_to_next_region.clear();
         people_to_above_region.clear();
         people_to_below_region.clear();
-        bool change1 = (incoming_people.size() > 0);
         incoming_people.clear();
-        bool change2 = region.updateStatus(&generator);
-        change1 = change1 | region.deleteSidePeople();
+        immigrent_people.clear();
+        border_people.clear();
 
-        if (change2) {
+        if (change || ((int) (t*10000))%10000==0) {
             std::string Status = region.getStatus();
             msg << "p: " << p << ", t:" << t << ", Status: " << Status << std::endl;
             std::cout << msg.str();

@@ -17,11 +17,12 @@ class Region {
                     std::list<Person> *people_to_prev_region,
                     std::list<Person> *people_to_next_region,
                     std::list<Person>* people_to_above_region,
-                    std::list<Person>* people_to_below_region);
+                    std::list<Person>* people_to_below_region,
+                    std::vector<Person>* border_people);
 
     void addPeople(std::vector<Person> new_people);
 
-    bool updateStatus(std::default_random_engine *generator);
+    bool updateStatus(std::default_random_engine *generator, std::vector<Person> *border_people);
 
     std::string getStatus();
 
