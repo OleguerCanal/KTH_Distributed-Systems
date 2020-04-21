@@ -11,7 +11,9 @@
 
 class Region {
   public:
-    Region(int people_num, env::boundary* boundary, std::default_random_engine *generator);
+    env::RegionCoordinates* coordinates;
+
+    Region(int people_num, env::RegionCoordinates* coord, std::default_random_engine *generator);
 
     void movePeople(std::default_random_engine *generator,
                     std::list<Person> *people_to_prev_region,

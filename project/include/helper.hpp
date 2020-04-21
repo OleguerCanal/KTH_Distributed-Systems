@@ -15,7 +15,7 @@ void print_to_file(Region region, int p, int P) {
         myfile.open("evolution.txt", std::ios_base::app | std::ios_base::out);
         // // std::cout << region.get_serialized_people() << std::endl;
         myfile << region.get_serialized_people();
-        if (P == 0)
+        if (P == 1)
             myfile << "\n";
         myfile.close();
         if (P > 1)
@@ -70,26 +70,51 @@ void receive_people(int from, std::vector<Person> *people) {
     }
 }
 
+void update_border_people_x(env::RegionCoordinates r_coord,
+                            std::list<Person> *people_to_left_region,
+                            std::list<Person> *people_to_right_region) {
+    if (r_coord.px == 0) {
+        for (Person& pers : *people_to_left_region)
+            pers.x += env::world_size_;
+    }
+    if (r_coord.px == r_coord.Px-1) {
+        for (Person& pers : *people_to_right_region)
+            pers.x -= env::world_size_;
+    }
+}
+
+void update_border_people_y(env::RegionCoordinates r_coord,
+                            std::list<Person> *people_to_below_region,
+                            std::list<Person> *people_to_above_region) {
+    if (r_coord.py == 0) {
+        for (Person& pers : *people_to_below_region)
+            pers.y += env::world_size_;
+    }
+    if (r_coord.py == r_coord.Py - 1) {
+        for (Person& pers : *people_to_above_region)
+            pers.y -= env::world_size_;
+    }
+}
+
 void exchange_people(env::RegionCoordinates r_coord,
                     std::list<Person> people_to_left_region,
                     std::list<Person> people_to_right_region,
                     std::list<Person> people_to_above_region,
                     std::list<Person> people_to_below_region,
                     std::vector<Person> *incoming_people) {
-    int p = r_coord.p;  // TODO(oleguer): Remove
-    int P = r_coord.P;
-    if (r_coord.P == 1) return;
     // TODO Case P%2 = 1
+    if (r_coord.P == 1) {
+        update_border_people_x(r_coord, &people_to_left_region, &people_to_right_region);
+        update_border_people_y(r_coord, &people_to_below_region, &people_to_above_region);
+        for (Person& pers : people_to_left_region)  incoming_people->push_back(pers);
+        for (Person& pers : people_to_right_region) incoming_people->push_back(pers);
+        for (Person& pers : people_to_below_region) incoming_people->push_back(pers);
+        for (Person& pers : people_to_above_region) incoming_people->push_back(pers);
+        return;
+    }
 
     // Update wolrd border people's coordinates
-    if (r_coord.px == 0) {
-        for (Person& pers : people_to_left_region)
-            pers.x += env::world_size_;
-    }
-    if (r_coord.px == r_coord.Px-1) {
-        for (Person& pers : people_to_right_region)
-            pers.x -= env::world_size_;
-    }
+    update_border_people_x(r_coord, &people_to_left_region, &people_to_right_region);
 
     // Exchange 
     if (r_coord.color == "black") {
@@ -99,7 +124,8 @@ void exchange_people(env::RegionCoordinates r_coord,
         // Exchange left
         send_people(r_coord.get_left_region_processor(), people_to_left_region);
         receive_people(r_coord.get_left_region_processor(), incoming_people);
-    } else {
+    }
+    if (r_coord.color == "red") {
         // Exchange left
         receive_people(r_coord.get_left_region_processor(), incoming_people);
         send_people(r_coord.get_left_region_processor(), people_to_left_region);
@@ -115,15 +141,7 @@ void exchange_people(env::RegionCoordinates r_coord,
             people_to_above_region.push_back(pers);
     }
 
-    if (r_coord.py == 0) {
-        for (Person& pers : people_to_below_region)
-            pers.y += env::world_size_;
-    }
-    if (r_coord.py == r_coord.Py - 1) {
-        for (Person& pers : people_to_above_region)
-            pers.y -= env::world_size_;
-    }
-
+    update_border_people_y(r_coord, &people_to_below_region, &people_to_above_region);
 
     // Exchange 
     if (r_coord.color == "black") {
@@ -142,6 +160,4 @@ void exchange_people(env::RegionCoordinates r_coord,
         receive_people(r_coord.get_above_region_processor(), incoming_people);
         send_people(r_coord.get_above_region_processor(), people_to_above_region);
     }
-
-    // std::cout << "done" << std::endl;
 }
