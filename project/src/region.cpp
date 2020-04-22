@@ -42,24 +42,23 @@ void Region::movePeople(std::default_random_engine *generator,
             }
         }
         else {
-            border_people->push_back(person);
+            if (person.isInfected())
+                border_people->push_back(person);
             if (person.x < boundary->left)
                 people_to_prev_region->push_back(person);
             if (person.x >= boundary->right)
                 people_to_next_region->push_back(person);
             if (person.y < boundary->lower)
-                if (person.x < boundary->left)
-                    people_to_below_region_infectious->push_back(person);
-                else if (person.x >= boundary->right)
-                    people_to_below_region_infectious->push_back(person);
-                else
+                if (person.x < boundary->left || person.x >= boundary->right) {
+                    if (person.isInfected())
+                        people_to_below_region_infectious->push_back(person);
+                } else
                     people_to_below_region->push_back(person);
             if (person.y >= boundary->upper)
-                if (person.x < boundary->left)
-                    people_to_above_region_infectious->push_back(person);
-                else if (person.x >= boundary->right)
-                    people_to_above_region_infectious->push_back(person);
-                else
+                if (person.x < boundary->left || person.x >= boundary->right) {
+                    if (person.isInfected())
+                        people_to_above_region_infectious->push_back(person);
+                } else
                     people_to_above_region->push_back(person);
         }
     }
@@ -78,9 +77,15 @@ void Region::addPeople(std::vector<Person> new_people) {
 }
 
 bool Region::updateStatus(std::default_random_engine *generator, std::vector<Person>* border_people) {
+    for (Person person : *border_people)
+        if (!person.isInfected()) {
+            std::cout << "cheat";
+            person.print();
+        }
     // Returns total number of infected people
     bool change = false;
     std::list<Person*> recentPeople = {};
+    std::vector<Person>::iterator border_start = border_people->begin();
     for (Person& person : people_) {
         if (person.isInfected()) {
             if (person.beSick() == 0) {
@@ -107,7 +112,6 @@ bool Region::updateStatus(std::default_random_engine *generator, std::vector<Per
             }
         }
 
-        std::vector<Person>::iterator border_start = border_people->begin();
         if (person.isSusceptible()) { //Is still susceptible (don't re-infect)
             if (border_start != border_people->end()) {
                 auto border_iterator = border_start;
@@ -116,6 +120,9 @@ bool Region::updateStatus(std::default_random_engine *generator, std::vector<Per
                         bool inf = person.tryToInfect(generator);
                         if (inf) {
                             change = true;
+                            std::cout << "INFECTION";
+                            person.print();
+                            border_iterator->print();
                             break;
                         }
                     }
@@ -127,7 +134,6 @@ bool Region::updateStatus(std::default_random_engine *generator, std::vector<Per
 
         while (border_start != border_people->end() && (*border_start).x < person.x - env::infection_distance_)
             border_start++;
-        //TODO advance pointer border_start
 
         while ((recentPeople.size() > 0) && ((person.x - (*recentPeople.begin())->x) >  env::infection_distance_))
             recentPeople.pop_front();

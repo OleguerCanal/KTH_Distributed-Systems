@@ -5,7 +5,7 @@
 #include <sstream>
 namespace env {
     const float TIME_STEP = 0.00001;
-    const int nrDays = 30;
+    const int nrDays = 1;
     const float world_size_ = 1.0f;
     const int processors_in_x_direction = 2;
     const int number_of_people = 100; // per region

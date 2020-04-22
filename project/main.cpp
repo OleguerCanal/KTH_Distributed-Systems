@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
     std::cout.precision(6);
 
     // std::default_random_engine generator(time(0) + p * 1000);
-    std::default_random_engine generator(1);
+    std::default_random_engine generator(1+p);
     if (P % env::processors_in_x_direction != 0) {
         MPI_Finalize();
         return -1;
@@ -62,12 +62,15 @@ int main(int argc, char** argv) {
     printStatus(region, -1);
 
     int iteration = 0;
-    int vis_freq = (int) (0.1/env::TIME_STEP); // Update every day
+    int vis_freq = (int) (0.01/env::TIME_STEP); // Update every day
     for (float t = 0; t <= env::nrDays; t += env::TIME_STEP) {
 
         int n_people = region.people_.size();
         bool change = communicate(&region, &generator);
-
+        for (Person person : region.people_)
+            if (person.x > region_coordinates.bound.right || person.x < region_coordinates.bound.left ||
+                person.y > region_coordinates.bound.upper || person.y < region_coordinates.bound.lower)
+                person.print();
         //if (n_people != region.people_.size()) {
         //    std::cout << "ERROR at t=" << t << std::endl;
         //    break;

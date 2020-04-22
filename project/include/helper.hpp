@@ -153,31 +153,35 @@ void exchange_people(env::RegionCoordinates r_coord,
         if (pers.y <= r_coord.bound.lower + env::infection_distance_)
             if (pers.y <= r_coord.bound.lower) {
                 people_to_below_region.push_back(pers);
-                border_people->push_back(pers);
+                if (pers.isInfected())
+                    border_people->push_back(pers);
             }
             else {
-                people_to_below_region_infectious.push_back(pers);
                 immigrant_people->push_back(pers);
+                if (pers.isInfected())
+                    people_to_below_region_infectious.push_back(pers);
             }
         else if (pers.y > r_coord.bound.upper - env::infection_distance_)
             if (pers.y > r_coord.bound.upper) {
                 people_to_above_region.push_back(pers);
-                border_people->push_back(pers);
+                if (pers.isInfected())
+                    border_people->push_back(pers);
             }
             else {
-                people_to_above_region_infectious.push_back(pers);
                 immigrant_people->push_back(pers);
+                if (pers.isInfected())
+                    people_to_above_region_infectious.push_back(pers);
             }
         else
             immigrant_people->push_back(pers);
     }
 
-    for (Person& pers : *border_people) {
-        if (pers.y <= r_coord.bound.lower + env::infection_distance_)
-            people_to_below_region_infectious.push_back(pers);
-        if (pers.y > r_coord.bound.upper - env::infection_distance_)
-            people_to_above_region_infectious.push_back(pers);
-    }
+    //for (Person& pers : *border_people) {
+    //    if (pers.y <= r_coord.bound.lower + env::infection_distance_)
+    //        people_to_below_region_infectious.push_back(pers);
+    //    if (pers.y > r_coord.bound.upper - env::infection_distance_)
+    //        people_to_above_region_infectious.push_back(pers);
+    //}
 
     update_border_people_y(r_coord, &people_to_below_region, &people_to_above_region);
     update_border_people_y(r_coord, &people_to_below_region_infectious, &people_to_above_region_infectious);
