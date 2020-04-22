@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
     printStatus(region, -1);
 
     int iteration = 0;
-    int vis_freq = (int) (0.01/env::TIME_STEP); // Update every day
+    int vis_freq = (int) (0.1/env::TIME_STEP); // Update every day
     for (float t = 0; t <= env::nrDays; t += env::TIME_STEP) {
 
         int n_people = region.people_.size();
@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
         //    break;
         //}
 
-        if (change || ((int) (t*10000))%10000==0)
+        if (change)
             printStatus(region, t);
         
         if (iteration%vis_freq == 0)

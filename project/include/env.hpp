@@ -5,14 +5,14 @@
 #include <sstream>
 namespace env {
     const float TIME_STEP = 0.00001;
-    const int nrDays = 1;
+    const int nrDays = 10;
     const float world_size_ = 1.0f;
     const int processors_in_x_direction = 2;
     const int number_of_people = 100; // per region
 
-    const float INFECTION_RATE = 0.00008;// 0.00008;
+    const float INFECTION_RATE = 0.00005;// 0.00008;
     const float SPEED = 10;
-    const float infection_distance_ = 0.06;
+    const float infection_distance_ = 0.04;
     const float infection_distance_squared_ = infection_distance_ * infection_distance_;
 
     const std::gamma_distribution<float> recovery_time_distrib = std::gamma_distribution<float>(10.0, 2.0 / 3.0);
