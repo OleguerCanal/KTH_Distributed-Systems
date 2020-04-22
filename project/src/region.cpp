@@ -13,8 +13,12 @@ Region::Region(int people_num, env::RegionCoordinates* coord, std::default_rando
 }
 
 void Region::movePeople(std::default_random_engine *generator,
-                        std::list<Person> *people_to_prev_region,
-                        std::list<Person> *people_to_next_region,
+                        std::list<Person> *people_to_prev_region_infectious,
+                        std::list<Person> *people_to_next_region_infectious,
+                        std::list<Person>* people_to_above_region_infectious,
+                        std::list<Person>* people_to_below_region_infectious,
+                        std::list<Person>* people_to_prev_region,
+                        std::list<Person>* people_to_next_region,
                         std::list<Person>* people_to_above_region,
                         std::list<Person>* people_to_below_region,
                         std::vector<Person>* border_people) {
@@ -23,22 +27,41 @@ void Region::movePeople(std::default_random_engine *generator,
     for (Person& person : people_) {  // O(n)
         person.move(generator);
 
-        if (person.x < boundary->right + env::infection_distance_ && person.x > boundary->left - env::infection_distance_ &&
-            person.y < boundary->upper + env::infection_distance_ && person.y > boundary->lower - env::infection_distance_)
-            if (person.x < boundary->right && person.x > boundary->left &&
-                person.y < boundary->upper && person.y > boundary->lower)
-                people_that_stay.push_back(person);
-            else
-                border_people->push_back(person);
-                
-        if (person.x < boundary->left + env::infection_distance_ && (person.isInfected() || person.x < boundary->left))
-            people_to_prev_region->push_back(person);
-        if (person.x > boundary->right - env::infection_distance_ && (person.isInfected() || person.x > boundary->right))
-            people_to_next_region->push_back(person);
-        if (person.y < boundary->lower + env::infection_distance_ && (person.isInfected() || person.y < boundary->lower))
-            people_to_below_region->push_back(person);
-        if (person.y > boundary->upper - env::infection_distance_ && (person.isInfected() || person.y > boundary->upper))
-            people_to_above_region->push_back(person);
+        if (person.x < boundary->right && person.x >= boundary->left &&
+            person.y < boundary->upper && person.y >= boundary->lower) {
+            people_that_stay.push_back(person);
+            if (person.isInfected()) {
+                if (person.x <= boundary->left + env::infection_distance_)
+                    people_to_prev_region_infectious->push_back(person);
+                if (person.x > boundary->right - env::infection_distance_)
+                    people_to_next_region_infectious->push_back(person);
+                if (person.y <= boundary->lower + env::infection_distance_)
+                    people_to_below_region_infectious->push_back(person);
+                if (person.y > boundary->upper - env::infection_distance_)
+                    people_to_above_region_infectious->push_back(person);
+            }
+        }
+        else {
+            border_people->push_back(person);
+            if (person.x < boundary->left)
+                people_to_prev_region->push_back(person);
+            if (person.x >= boundary->right)
+                people_to_next_region->push_back(person);
+            if (person.y < boundary->lower)
+                if (person.x < boundary->left)
+                    people_to_below_region_infectious->push_back(person);
+                else if (person.x >= boundary->right)
+                    people_to_below_region_infectious->push_back(person);
+                else
+                    people_to_below_region->push_back(person);
+            if (person.y >= boundary->upper)
+                if (person.x < boundary->left)
+                    people_to_above_region_infectious->push_back(person);
+                else if (person.x >= boundary->right)
+                    people_to_above_region_infectious->push_back(person);
+                else
+                    people_to_above_region->push_back(person);
+        }
     }
     people_ = people_that_stay; // Unsorted 
     // Better not to sort it yet because we still need to receive from other regions
@@ -101,6 +124,9 @@ bool Region::updateStatus(std::default_random_engine *generator, std::vector<Per
                 }
             }
         }
+
+        while (border_start != border_people->end() && (*border_start).x < person.x - env::infection_distance_)
+            border_start++;
         //TODO advance pointer border_start
 
         while ((recentPeople.size() > 0) && ((person.x - (*recentPeople.begin())->x) >  env::infection_distance_))
@@ -127,10 +153,11 @@ std::string Region::getStatus() {
 }
 
 bool Region::deleteSidePeople() {
+    std::cout << "DEPRECATED - SHOULDN'T USE DELETESIDEPEOPLE" << std::endl;
     std::vector<Person> people_that_stay;
     int nbPeople = people_.size();
     for (Person& person : people_)
-        if (person.x > boundary->left && person.x < boundary->right && person.y < boundary->upper && person.y > boundary->lower)
+        if (person.x >= boundary->left && person.x < boundary->right && person.y < boundary->upper && person.y >= boundary->lower)
             people_that_stay.push_back(person);
     people_ = people_that_stay;
     return (nbPeople != people_.size());

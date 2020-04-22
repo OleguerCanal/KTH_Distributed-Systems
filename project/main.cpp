@@ -23,18 +23,14 @@ bool communicate(Region *region, std::default_random_engine *generator) {
     std::list<Person> people_to_next_region;
     std::list<Person> people_to_above_region;
     std::list<Person> people_to_below_region;
-    std::vector<Person> incoming_people;
+    std::list<Person> people_to_prev_region_infectious;
+    std::list<Person> people_to_next_region_infectious;
+    std::list<Person> people_to_above_region_infectious;
+    std::list<Person> people_to_below_region_infectious;
     std::vector<Person> immigrant_people;
     std::vector<Person> border_people;
-    region->movePeople(generator, &people_to_prev_region, &people_to_next_region, &people_to_above_region, &people_to_below_region, &border_people);
-    exchange_people(*(region->coordinates), people_to_prev_region, people_to_next_region, people_to_above_region, people_to_below_region, &incoming_people);
-    for (Person person : incoming_people) {
-        if (person.x <= region->coordinates->bound.right && person.x >= region->coordinates->bound.left &&
-            person.y <= region->coordinates->bound.upper && person.y >= region->coordinates->bound.lower)
-            immigrant_people.push_back(person);
-        else
-            border_people.push_back(person);
-    }
+    region->movePeople(generator, &people_to_prev_region_infectious, &people_to_next_region_infectious, &people_to_above_region_infectious, &people_to_below_region_infectious, &people_to_prev_region, &people_to_next_region, &people_to_above_region, &people_to_below_region, &border_people);
+    exchange_people(*(region->coordinates), people_to_prev_region_infectious, people_to_next_region_infectious, people_to_above_region_infectious, people_to_below_region_infectious, people_to_prev_region, people_to_next_region, people_to_above_region, people_to_below_region, &immigrant_people, &border_people);
     std::sort(border_people.begin(), border_people.end());
     region->addPeople(immigrant_people);
     bool change = region->updateStatus(generator,&border_people);
@@ -72,11 +68,10 @@ int main(int argc, char** argv) {
         int n_people = region.people_.size();
         bool change = communicate(&region, &generator);
 
-        if (n_people != region.people_.size()) {
-
-            std::cout << "ERROR at t=" << t << std::endl;
-            break;
-        }
+        //if (n_people != region.people_.size()) {
+        //    std::cout << "ERROR at t=" << t << std::endl;
+        //    break;
+        //}
 
         if (change || ((int) (t*10000))%10000==0)
             printStatus(region, t);
