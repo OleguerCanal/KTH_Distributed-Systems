@@ -4,12 +4,14 @@
 #include <stdlib.h>
 #include <sstream>
 namespace env {
-    const float TIME_STEP = 0.00001;
-    const int nrDays = 20;
-    const float world_size_ = 1.0f;
-    const int processors_in_x_direction = 2;
-    const int number_of_people = 50; // per region
+    // User-defined
+    extern float world_size_;
+    extern int processors_in_x_direction;
+    extern int number_of_people; // per region
 
+    // Constant values
+    const float TIME_STEP = 0.00001;
+    const int nrDays = 25;
     const float INFECTION_RATE = 0.00005;// 0.00008;
     const float SPEED = 10;
     const float infection_distance_ = 0.04;
@@ -23,7 +25,6 @@ namespace env {
         float right;
         float upper;
         float lower;
-
         boundary() {}
     };
 

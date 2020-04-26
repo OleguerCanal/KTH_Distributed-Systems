@@ -10,7 +10,13 @@
 #include <env.hpp>
 #include <helper.hpp>
 
-bool DEBUG = true;  // Turn true if you wanna print and save histogram data (SLOWER)
+bool DEBUG = false;  // Turn true if you wanna print and save histogram data (SLOWER)
+
+namespace env {
+    float world_size_ = 1.0;
+    int processors_in_x_direction = 2;
+    int number_of_people = 100; // per region
+}
 
 void printStatus(Region &region, float t) {
     if (!DEBUG) return;
@@ -40,19 +46,29 @@ bool communicate(Region *region, std::default_random_engine *generator) {
 }
 
 int main(int argc, char** argv) {
+    if (argc != 3) {
+        printf("Wrong number of arguments");
+        return 0;
+    }
+
     int p, P;
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &P);
     MPI_Comm_rank(MPI_COMM_WORLD, &p);
     std::cout.precision(6);
-
     double start_time = MPI_Wtime();
 
-// Do something here
+    env::processors_in_x_direction = std::min(P, 2);
+    env::number_of_people = atoi(argv[1])/P;
+    env::world_size_ = (float) atoi(argv[2]);
 
+    if (p == 0 )
+        std::cout << "P:" << P << ", n:" << env::number_of_people
+        << ", N:" << P*env::number_of_people
+        << ", WS:" << env::world_size_ << std::endl;
 
-    // std::default_random_engine generator(time(0) + p * 1000);
-    std::default_random_engine generator(2+p);
+    std::default_random_engine generator(time(0) + p * 1000);
+    // std::default_random_engine generator(2+p);
     if (P % env::processors_in_x_direction != 0) {
         MPI_Finalize();
         return -1;
@@ -82,9 +98,16 @@ int main(int argc, char** argv) {
         }
     }
     printStatus(region, -1);
+    // MPI_Barrier(MPI_COMM_WORLD);
+    if (p == 0) {
+        double exec_time = MPI_Wtime() - start_time;
+        std::cout << "The process took " << exec_time << " seconds to run." << std::endl;
+        std::ofstream myfile;
+        myfile.open("TIMES.txt", std::ios_base::app | std::ios_base::out);
+        // P, TotalNumPeople, WorldSize
+        myfile << P << "," << argv[1] << "," << argv[2] << "," << exec_time << "\n";
+        myfile.close();
+    }
 
-
-    double end_time = MPI_Wtime();
-    std::cout << "The process took " << end_time - start_time << " seconds to run." << std::endl;
     MPI_Finalize();
 }

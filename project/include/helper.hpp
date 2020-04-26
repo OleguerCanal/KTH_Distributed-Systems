@@ -12,7 +12,6 @@ void save_people_pos(Region region, int p, int P) {
     MPI_Status status;
     if (p == 0) {  // First processor writes to file
         myfile.open("data/evolution.txt", std::ios_base::app | std::ios_base::out);
-        // // std::cout << region.get_serialized_people() << std::endl;
         myfile << region.get_serialized_people();
         if (P == 1)
             myfile << "\n";
