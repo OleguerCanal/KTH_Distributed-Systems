@@ -16,14 +16,7 @@ class Region {
     Region(int people_num, env::RegionCoordinates* coord, std::default_random_engine *generator);
 
     void movePeople(std::default_random_engine *generator,
-                    std::list<Person> *people_to_prev_region,
-                    std::list<Person> *people_to_next_region,
-                    std::list<Person>* people_to_above_region,
-                    std::list<Person>* people_to_below_region,
-        std::list<Person>* people_to_prev_region_infectious,
-        std::list<Person>* people_to_next_region_infectious,
-        std::list<Person>* people_to_above_region_infectious,
-        std::list<Person>* people_to_below_region_infectious,
+                    env::PeopleToExchange *people_to,
                     std::vector<Person>* border_people);
 
     void addPeople(std::vector<Person> new_people);

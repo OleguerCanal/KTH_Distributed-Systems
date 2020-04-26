@@ -3,6 +3,8 @@
 #include <string>
 #include <stdlib.h>
 #include <sstream>
+#include <person.hpp>
+
 namespace env {
     const float TIME_STEP = 0.00001;
     const int nrDays = 10;
@@ -79,5 +81,16 @@ namespace env {
         int get_processor() {
             return px + env::processors_in_x_direction * py;
         }
+    };
+
+    struct PeopleToExchange {
+        std::list<Person> left;
+        std::list<Person> right;
+        std::list<Person> above;
+        std::list<Person> below;
+        std::list<Person> left_infectious;
+        std::list<Person> right_infectious;
+        std::list<Person> above_infectious;
+        std::list<Person> below_infectious;
     };
 }

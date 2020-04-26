@@ -1,9 +1,9 @@
 #pragma once
 #include <iostream>
-#include<stdlib.h>
-#include<string>
-#include<random>
-#include<env.hpp>
+#include <stdlib.h>
+#include <string>
+#include <random>
+#include <env.hpp>
 #include <sstream>
 
 class Person {

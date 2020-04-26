@@ -97,41 +97,41 @@ void update_border_people_y(env::RegionCoordinates r_coord,
 }
 
 void exchange_people(env::RegionCoordinates r_coord,
-                    std::list<Person> people_to_left_region_infectious,
-                    std::list<Person> people_to_right_region_infectious,
-                    std::list<Person> people_to_above_region_infectious,
-                    std::list<Person> people_to_below_region_infectious,
-                    std::list<Person> people_to_left_region,
-                    std::list<Person> people_to_right_region,
-                    std::list<Person> people_to_above_region,
-                    std::list<Person> people_to_below_region,
+                    env::PeopleToExchange &people_to,
+                    // std::list<Person> people_to_left_region_infectious,
+                    // std::list<Person> people_to_right_region_infectious,
+                    // std::list<Person> people_to_above_region_infectious,
+                    // std::list<Person> people_to_below_region_infectious,
+                    // std::list<Person> people_to_left_region,
+                    // std::list<Person> people_to_right_region,
+                    // std::list<Person> people_to_above_region,
+                    // std::list<Person> people_to_below_region,
                     std::vector<Person>* immigrant_people,
                     std::vector<Person>* border_people) {
 
-    //TODO Corner people update x and y
-    // Update wolrd border people's coordinates
-    update_border_people_x(r_coord, &people_to_left_region, &people_to_right_region);
-    update_border_people_x(r_coord, &people_to_left_region_infectious, &people_to_right_region_infectious);
+    // Update world border people's coordinates
+    update_border_people_x(r_coord, &people_to.left, &people_to.right);
+    update_border_people_x(r_coord, &people_to.left_infectious, &people_to.right_infectious);
     
     std::vector<Person> tempImmigrant_people;
 
     if (r_coord.Px == 1) {
-        for (Person pers : people_to_left_region) tempImmigrant_people.push_back(pers);
-        for (Person pers : people_to_right_region) tempImmigrant_people.push_back(pers);
-        for (Person pers : people_to_left_region_infectious) border_people->push_back(pers);
-        for (Person pers : people_to_right_region_infectious) border_people->push_back(pers);
+        for (Person pers : people_to.left) tempImmigrant_people.push_back(pers);
+        for (Person pers : people_to.right) tempImmigrant_people.push_back(pers);
+        for (Person pers : people_to.left_infectious) border_people->push_back(pers);
+        for (Person pers : people_to.right_infectious) border_people->push_back(pers);
     }
     else {
         // Exchange
         if (r_coord.color == "black") {
             // Exchange right
-            send_people(r_coord.get_right_region_processor(), people_to_right_region);
-            send_people(r_coord.get_right_region_processor(), people_to_right_region_infectious);
+            send_people(r_coord.get_right_region_processor(), people_to.right);
+            send_people(r_coord.get_right_region_processor(), people_to.right_infectious);
             receive_people(r_coord.get_right_region_processor(), &tempImmigrant_people);
             receive_people(r_coord.get_right_region_processor(), border_people);
             // Exchange left
-            send_people(r_coord.get_left_region_processor(), people_to_left_region);
-            send_people(r_coord.get_left_region_processor(), people_to_left_region_infectious);
+            send_people(r_coord.get_left_region_processor(), people_to.left);
+            send_people(r_coord.get_left_region_processor(), people_to.left_infectious);
             receive_people(r_coord.get_left_region_processor(), &tempImmigrant_people);
             receive_people(r_coord.get_left_region_processor(), border_people);
         }
@@ -139,38 +139,38 @@ void exchange_people(env::RegionCoordinates r_coord,
             // Exchange left
             receive_people(r_coord.get_left_region_processor(), &tempImmigrant_people);
             receive_people(r_coord.get_left_region_processor(), border_people);
-            send_people(r_coord.get_left_region_processor(), people_to_left_region);
-            send_people(r_coord.get_left_region_processor(), people_to_left_region_infectious);
+            send_people(r_coord.get_left_region_processor(), people_to.left);
+            send_people(r_coord.get_left_region_processor(), people_to.left_infectious);
             // Exchange right
             receive_people(r_coord.get_right_region_processor(), &tempImmigrant_people);
             receive_people(r_coord.get_right_region_processor(), border_people);
-            send_people(r_coord.get_right_region_processor(), people_to_right_region);
-            send_people(r_coord.get_right_region_processor(), people_to_right_region_infectious);
+            send_people(r_coord.get_right_region_processor(), people_to.right);
+            send_people(r_coord.get_right_region_processor(), people_to.right_infectious);
         }
     }
 
     for (Person& pers : tempImmigrant_people) {
         if (pers.y <= r_coord.bound.lower + env::infection_distance_)
             if (pers.y <= r_coord.bound.lower) {
-                people_to_below_region.push_back(pers);
+                people_to.below.push_back(pers);
                 if (pers.isInfected())
                     border_people->push_back(pers);
             }
             else {
                 immigrant_people->push_back(pers);
                 if (pers.isInfected())
-                    people_to_below_region_infectious.push_back(pers);
+                    people_to.below_infectious.push_back(pers);
             }
         else if (pers.y > r_coord.bound.upper - env::infection_distance_)
             if (pers.y > r_coord.bound.upper) {
-                people_to_above_region.push_back(pers);
+                people_to.above.push_back(pers);
                 if (pers.isInfected())
                     border_people->push_back(pers);
             }
             else {
                 immigrant_people->push_back(pers);
                 if (pers.isInfected())
-                    people_to_above_region_infectious.push_back(pers);
+                    people_to.above_infectious.push_back(pers);
             }
         else
             immigrant_people->push_back(pers);
@@ -178,31 +178,31 @@ void exchange_people(env::RegionCoordinates r_coord,
 
     //for (Person& pers : *border_people) {
     //    if (pers.y <= r_coord.bound.lower + env::infection_distance_)
-    //        people_to_below_region_infectious.push_back(pers);
+    //        people_to.below_infectious.push_back(pers);
     //    if (pers.y > r_coord.bound.upper - env::infection_distance_)
-    //        people_to_above_region_infectious.push_back(pers);
+    //        people_to.above_infectious.push_back(pers);
     //}
 
-    update_border_people_y(r_coord, &people_to_below_region, &people_to_above_region);
-    update_border_people_y(r_coord, &people_to_below_region_infectious, &people_to_above_region_infectious);
+    update_border_people_y(r_coord, &people_to.below, &people_to.above);
+    update_border_people_y(r_coord, &people_to.below_infectious, &people_to.above_infectious);
 
     if (r_coord.Py == 1) {
-        for (Person pers : people_to_above_region) immigrant_people->push_back(pers);
-        for (Person pers : people_to_below_region) immigrant_people->push_back(pers);
-        for (Person pers : people_to_above_region_infectious) border_people->push_back(pers);
-        for (Person pers : people_to_below_region_infectious) border_people->push_back(pers);
+        for (Person pers : people_to.above) immigrant_people->push_back(pers);
+        for (Person pers : people_to.below) immigrant_people->push_back(pers);
+        for (Person pers : people_to.above_infectious) border_people->push_back(pers);
+        for (Person pers : people_to.below_infectious) border_people->push_back(pers);
     }
     else {
         // Exchange
         if (r_coord.color == "black") {
             // Exchange up
-            send_people(r_coord.get_above_region_processor(), people_to_above_region);
-            send_people(r_coord.get_above_region_processor(), people_to_above_region_infectious);
+            send_people(r_coord.get_above_region_processor(), people_to.above);
+            send_people(r_coord.get_above_region_processor(), people_to.above_infectious);
             receive_people(r_coord.get_above_region_processor(), immigrant_people);
             receive_people(r_coord.get_above_region_processor(), border_people);
             // Exchange down
-            send_people(r_coord.get_below_region_processor(), people_to_below_region);
-            send_people(r_coord.get_below_region_processor(), people_to_below_region_infectious);
+            send_people(r_coord.get_below_region_processor(), people_to.below);
+            send_people(r_coord.get_below_region_processor(), people_to.below_infectious);
             receive_people(r_coord.get_below_region_processor(), immigrant_people);
             receive_people(r_coord.get_below_region_processor(), border_people);
         }
@@ -210,13 +210,13 @@ void exchange_people(env::RegionCoordinates r_coord,
             // Exchange down
             receive_people(r_coord.get_below_region_processor(), immigrant_people);
             receive_people(r_coord.get_below_region_processor(), border_people);
-            send_people(r_coord.get_below_region_processor(), people_to_below_region);
-            send_people(r_coord.get_below_region_processor(), people_to_below_region_infectious);
+            send_people(r_coord.get_below_region_processor(), people_to.below);
+            send_people(r_coord.get_below_region_processor(), people_to.below_infectious);
             // Exchange up
             receive_people(r_coord.get_above_region_processor(), immigrant_people);
             receive_people(r_coord.get_above_region_processor(), border_people);
-            send_people(r_coord.get_above_region_processor(), people_to_above_region);
-            send_people(r_coord.get_above_region_processor(), people_to_above_region_infectious);
+            send_people(r_coord.get_above_region_processor(), people_to.above);
+            send_people(r_coord.get_above_region_processor(), people_to.above_infectious);
         }
     }
 }
