@@ -10,8 +10,10 @@
 #include <env.hpp>
 #include <helper.hpp>
 
+bool DEBUG = true;  // Turn true if you wanna print and save histogram data (SLOWER)
 
 void printStatus(Region &region, float t) {
+    if (!DEBUG) return;
     std::stringstream msg;
     msg << "p: " << region.coordinates->p << ", t:" << t << ", Status: " << region.getStatus() << std::endl;
     std::cout << msg.str();
@@ -44,15 +46,19 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &p);
     std::cout.precision(6);
 
+    double start_time = MPI_Wtime();
+
+// Do something here
+
+
     // std::default_random_engine generator(time(0) + p * 1000);
-    std::default_random_engine generator(1+p);
+    std::default_random_engine generator(2+p);
     if (P % env::processors_in_x_direction != 0) {
         MPI_Finalize();
         return -1;
     }
     env::RegionCoordinates region_coordinates(p, P);
 
-    //todo: separate zone and create regions and people
     Region region(env::number_of_people, &region_coordinates, &generator);
     if (p == 0) {
         Person* Mike = region.getRandomPerson();
@@ -60,31 +66,25 @@ int main(int argc, char** argv) {
     }
 
     printStatus(region, -1);
-
     int iteration = 0;
-    int vis_freq = (int) (0.1/env::TIME_STEP); // Update every day
+    int vis_freq = (int) (0.1/env::TIME_STEP);
     for (float t = 0; t <= env::nrDays; t += env::TIME_STEP) {
-
-        int n_people = region.people_.size();
         bool change = communicate(&region, &generator);
-        for (Person person : region.people_)
-            if (person.x > region_coordinates.bound.right || person.x < region_coordinates.bound.left ||
-                person.y > region_coordinates.bound.upper || person.y < region_coordinates.bound.lower)
-                person.print();
-        //if (n_people != region.people_.size()) {
-        //    std::cout << "ERROR at t=" << t << std::endl;
-        //    break;
-        //}
 
-        if (change)
-            printStatus(region, t);
-        
-        if (iteration%vis_freq == 0)
-            print_to_file(region, p, P);
-        iteration += 1;
+        if (DEBUG) {
+            if (change)
+                printStatus(region, t);
+
+            if (iteration%vis_freq == 0)
+                // save_people_pos(region, p, P);
+                save_hist_data(region, p, P);
+            iteration += 1;
+        }
     }
     printStatus(region, -1);
-    std::cout << "iterations: " << iteration << std::endl;
-    std::cout << p << ", " << P << std::endl;
+
+
+    double end_time = MPI_Wtime();
+    std::cout << "The process took " << end_time - start_time << " seconds to run." << std::endl;
     MPI_Finalize();
 }

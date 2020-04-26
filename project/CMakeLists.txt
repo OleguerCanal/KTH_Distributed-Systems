@@ -1,9 +1,13 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-# Setting build type to debug (TODO Remove this when time profiling!!!)
+# Settings for debug mode
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
+
+# Settings for release mode
+# set(CMAKE_BUILD_TYPE Release)
+
 
 find_package(MPI REQUIRED)
 

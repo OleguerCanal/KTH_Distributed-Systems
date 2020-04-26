@@ -2,5 +2,8 @@ cd build
 make
 cd ..
 rm evolution.txt
-mpirun -n 4 build/my_mpi_bin
-python visualize.py
+rm data/evolution.txt
+rm data/hist_data.txt
+mpirun -n 8 build/my_mpi_bin
+# python visualize.py
+python plot_hist.py

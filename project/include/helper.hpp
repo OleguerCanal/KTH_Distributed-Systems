@@ -6,13 +6,12 @@
 
 #include "mpi.h"
 
-void print_to_file(Region region, int p, int P) {
+void save_people_pos(Region region, int p, int P) {
     std::ofstream myfile;
-
     bool sendBuffer, recieveBuffer;
     MPI_Status status;
     if (p == 0) {  // First processor writes to file
-        myfile.open("evolution.txt", std::ios_base::app | std::ios_base::out);
+        myfile.open("data/evolution.txt", std::ios_base::app | std::ios_base::out);
         // // std::cout << region.get_serialized_people() << std::endl;
         myfile << region.get_serialized_people();
         if (P == 1)
@@ -23,15 +22,45 @@ void print_to_file(Region region, int p, int P) {
     }
     if (P > 1 && p > 0 && p != P - 1) {
         MPI_Recv(&recieveBuffer, 1, MPI::BOOL, p - 1, 0, MPI_COMM_WORLD, &status);
-        myfile.open("evolution.txt", std::ios_base::app | std::ios_base::out);
+        myfile.open("data/evolution.txt", std::ios_base::app | std::ios_base::out);
         myfile << region.get_serialized_people();
         myfile.close();
         MPI_Send(&sendBuffer, 1, MPI::BOOL, p + 1, 0, MPI_COMM_WORLD);  // Tell the others to start writting
     }
     if (P > 1 && p == (P - 1)) {
         MPI_Recv(&recieveBuffer, 1, MPI::BOOL, p - 1, 0, MPI_COMM_WORLD, &status);
-        myfile.open("evolution.txt", std::ios_base::app | std::ios_base::out);
+        myfile.open("data/evolution.txt", std::ios_base::app | std::ios_base::out);
         myfile << region.get_serialized_people();
+        myfile << "\n";
+        myfile.close();
+    }
+}
+
+void save_hist_data(Region region, int p, int P) {
+    std::ofstream myfile;
+    bool sendBuffer, recieveBuffer;
+    MPI_Status status;
+    if (p == 0) {  // First processor writes to file
+        myfile.open("data/hist_data.txt", std::ios_base::app | std::ios_base::out);
+        // // std::cout << region.get_serialized_people() << std::endl;
+        myfile << region.getStatus(false);
+        if (P == 1)
+            myfile << "\n";
+        myfile.close();
+        if (P > 1)
+            MPI_Send(&sendBuffer, 1, MPI::BOOL, 1, 0, MPI_COMM_WORLD);  // Tell p1 to start writting
+    }
+    if (P > 1 && p > 0 && p != P - 1) {
+        MPI_Recv(&recieveBuffer, 1, MPI::BOOL, p - 1, 0, MPI_COMM_WORLD, &status);
+        myfile.open("data/hist_data.txt", std::ios_base::app | std::ios_base::out);
+        myfile << region.getStatus(false);
+        myfile.close();
+        MPI_Send(&sendBuffer, 1, MPI::BOOL, p + 1, 0, MPI_COMM_WORLD);  // Tell the others to start writting
+    }
+    if (P > 1 && p == (P - 1)) {
+        MPI_Recv(&recieveBuffer, 1, MPI::BOOL, p - 1, 0, MPI_COMM_WORLD, &status);
+        myfile.open("data/hist_data.txt", std::ios_base::app | std::ios_base::out);
+        myfile << region.getStatus(false);
         myfile << "\n";
         myfile.close();
     }

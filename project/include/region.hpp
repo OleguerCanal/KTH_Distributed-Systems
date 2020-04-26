@@ -30,7 +30,7 @@ class Region {
 
     bool updateStatus(std::default_random_engine *generator, std::vector<Person> *border_people);
 
-    std::string getStatus();
+    std::string getStatus(bool human_readable=true);
 
     bool deleteSidePeople();
 

@@ -135,7 +135,7 @@ bool Region::updateStatus(std::default_random_engine *generator, std::vector<Per
     return change;
 }
 
-std::string Region::getStatus() {
+std::string Region::getStatus(bool human_readable) {
     std::stringstream msg;
     int nbInfected = 0;
     int nbSusceptibles = 0;
@@ -145,7 +145,12 @@ std::string Region::getStatus() {
         if (person.isSusceptible())
             nbSusceptibles++;
     }
-    msg << "S:" << nbSusceptibles << " I:" << nbInfected << " R:" << people_.size()-nbInfected-nbSusceptibles;
+    if (human_readable)
+        msg << "S:" << nbSusceptibles << " I:" << nbInfected << " R:" << people_.size()-nbInfected-nbSusceptibles;
+    else {
+        msg << nbSusceptibles << "," << nbInfected << "," << people_.size()-nbInfected-nbSusceptibles;
+        msg << "|";
+    }
     return msg.str();
 }
 

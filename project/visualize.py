@@ -24,7 +24,7 @@ class AnimatedScatter(object):
         
         Writer = animation.writers['ffmpeg']
         writer = Writer(fps=30, metadata=dict(artist='Me'), bitrate=1800)
-        self.ani.save('evolution.mp4', writer=writer)
+        self.ani.save('data/evolution.mp4', writer=writer)
         print("Saved")
         # self.ani.save('animation.gif', writer='imagemagick', fps=10)
         # self.ani.save('animation.gif', writer='imagemagick', fps=10)
