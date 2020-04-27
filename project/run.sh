@@ -9,8 +9,8 @@ P=4    # Number of processors
 N=100  # Total number of people (whole world)
 WS=1   # World size
 mpirun -n $P build/my_mpi_bin $N $WS
-# python visualize.py
-python plot_hist.py
+python plots/visualize.py
+# python plots/plot_hist.py
 
 # for P in 1 4 8
 # do

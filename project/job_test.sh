@@ -11,9 +11,9 @@ cd ..
 # WS=1   # World size
 # mpirun -n $P build/my_mpi_bin $N $WS
 
-for P in 1 4 8
+for P in 1 2 4 8
 do
-    for N in 100 500
+    for N in 3000
     do
         for WS in 1 2 4
         do

@@ -10,7 +10,7 @@
 #include <env.hpp>
 #include <helper.hpp>
 
-bool DEBUG = false;  // Turn true if you wanna print and save histogram data (SLOWER)
+bool DEBUG = true;  // Turn true if you wanna print and save histogram data (SLOWER)
 
 namespace env {
     float world_size_ = 1.0;
@@ -92,8 +92,8 @@ int main(int argc, char** argv) {
                 printStatus(region, t);
 
             if (iteration%vis_freq == 0)
-                // save_people_pos(region, p, P);
-                save_hist_data(region, p, P);
+                save_people_pos(region, p, P);
+                // save_hist_data(region, p, P);
             iteration += 1;
         }
     }

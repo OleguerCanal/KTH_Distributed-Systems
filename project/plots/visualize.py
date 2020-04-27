@@ -89,7 +89,7 @@ class AnimatedScatter(object):
             status.append(ps)
         return x, y, status
 
-    def read_file(self, filepath = "evolution.txt"):
+    def read_file(self, filepath = "data/evolution.txt"):
         self.data = []
         with open(filepath) as fp:
                 line = fp.readline()
