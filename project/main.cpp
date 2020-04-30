@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     if (p == 0 )
         std::cout << "P:" << P << ", n:" << env::NR_PEOPLE
         << ", N:" << P*env::NR_PEOPLE
-        << ", WS:" << env::WORLD_SIZE << env::INFECTION_RATE << std::endl;
+        << ", WS:" << env::WORLD_SIZE << ", IR:" << env::INFECTION_RATE << std::endl; // Infection rate per time step
 
     std::default_random_engine generator(time(0) + p * 1000);
     // std::default_random_engine generator(2+p);
