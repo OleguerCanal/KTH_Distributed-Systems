@@ -12,7 +12,7 @@ namespace env {
     // Constant values
     const int NR_DAYS = 10;
     const float TIME_STEP = 0.01;                 // Check REGION_SIZE/BASE_SPEED/sqrt(TIME_STEP) > 10 !!!
-    const float BASE_SPEED = 1.0;                 // in metres (A person moves base_speed*K a day on average (K=sqrt(pi/2)=0.79788))
+    const float BASE_SPEED = 5.0;                 // in metres (A person moves base_speed*K a day on average (K=sqrt(pi/2)=0.79788))
     const float INFECTION_RATE_PER_MINUTE = 0.01; // Have a 0.01 chance for every minute close to an infected to get infected
 
     const float INFECTION_RATE = 1-pow(1 - INFECTION_RATE_PER_MINUTE,24.0*60.0*TIME_STEP);

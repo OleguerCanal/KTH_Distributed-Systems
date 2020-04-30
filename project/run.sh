@@ -7,7 +7,7 @@ rm data/hist_data.txt
 
 P=4    # Number of processors
 N=100  # Total number of people (whole world)
-WS=20 # World size. Try to keep WS^2/N ~ 4 or 5 
+WS=50 # World size. Try to keep WS^2/N ~ 4 or 5 
 mpirun -n $P build/my_mpi_bin $N $WS
 python plots/visualize.py
 # python plots/plot_hist.py
