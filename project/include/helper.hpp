@@ -103,11 +103,11 @@ void update_border_people_x(env::RegionCoordinates r_coord,
                             std::list<Person>* people_to_right_region) {
     if (r_coord.px == 0) {
         for (Person& pers : *people_to_left_region)
-            pers.x += env::world_size_;
+            pers.x += env::WORLD_SIZE;
     }
     if (r_coord.px == r_coord.Px - 1) {
         for (Person& pers : *people_to_right_region)
-            pers.x -= env::world_size_;
+            pers.x -= env::WORLD_SIZE;
     }
 }
 
@@ -116,11 +116,11 @@ void update_border_people_y(env::RegionCoordinates r_coord,
                             std::list<Person>* people_to_above_region) {
     if (r_coord.py == 0) {
         for (Person& pers : *people_to_below_region)
-            pers.y += env::world_size_;
+            pers.y += env::WORLD_SIZE;
     }
     if (r_coord.py == r_coord.Py - 1) {
         for (Person& pers : *people_to_above_region)
-            pers.y -= env::world_size_;
+            pers.y -= env::WORLD_SIZE;
     }
 }
 
@@ -178,7 +178,7 @@ void exchange_people(env::RegionCoordinates r_coord,
     }
 
     for (Person& pers : tempImmigrant_people) {
-        if (pers.y <= r_coord.bound.lower + env::infection_distance_)
+        if (pers.y <= r_coord.bound.lower + env::INFECTION_DISTANCE)
             if (pers.y <= r_coord.bound.lower) {
                 people_to_below_region.push_back(pers);
                 if (pers.isInfected())
@@ -189,7 +189,7 @@ void exchange_people(env::RegionCoordinates r_coord,
                 if (pers.isInfected())
                     people_to_below_region_infectious.push_back(pers);
             }
-        else if (pers.y > r_coord.bound.upper - env::infection_distance_)
+        else if (pers.y > r_coord.bound.upper - env::INFECTION_DISTANCE)
             if (pers.y > r_coord.bound.upper) {
                 people_to_above_region.push_back(pers);
                 if (pers.isInfected())
@@ -205,9 +205,9 @@ void exchange_people(env::RegionCoordinates r_coord,
     }
 
     //for (Person& pers : *border_people) {
-    //    if (pers.y <= r_coord.bound.lower + env::infection_distance_)
+    //    if (pers.y <= r_coord.bound.lower + env::INFECTION_DISTANCE)
     //        people_to_below_region_infectious.push_back(pers);
-    //    if (pers.y > r_coord.bound.upper - env::infection_distance_)
+    //    if (pers.y > r_coord.bound.upper - env::INFECTION_DISTANCE)
     //        people_to_above_region_infectious.push_back(pers);
     //}
 

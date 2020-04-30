@@ -13,9 +13,9 @@
 bool DEBUG = true;  // Turn true if you wanna print and save histogram data (SLOWER)
 
 namespace env {
-    float world_size_ = 1.0;
-    int processors_in_x_direction = 2;
-    int number_of_people = 100; // per region
+    float WORLD_SIZE = 10.0;
+    int PROCESSORS_IN_X_DIRECTION = 2;
+    int NR_PEOPLE = 5000; // per region
 }
 
 void printStatus(Region &region, float t) {
@@ -58,24 +58,24 @@ int main(int argc, char** argv) {
     std::cout.precision(6);
     double start_time = MPI_Wtime();
 
-    env::processors_in_x_direction = std::min(P, 2);
-    env::number_of_people = atoi(argv[1])/P;
-    env::world_size_ = (float) atoi(argv[2]);
+    env::PROCESSORS_IN_X_DIRECTION = std::min(P, 2);
+    env::NR_PEOPLE = atoi(argv[1])/P;
+    env::WORLD_SIZE = (float) atoi(argv[2]);
 
     if (p == 0 )
-        std::cout << "P:" << P << ", n:" << env::number_of_people
-        << ", N:" << P*env::number_of_people
-        << ", WS:" << env::world_size_ << std::endl;
+        std::cout << "P:" << P << ", n:" << env::NR_PEOPLE
+        << ", N:" << P*env::NR_PEOPLE
+        << ", WS:" << env::WORLD_SIZE << env::INFECTION_RATE << std::endl;
 
     std::default_random_engine generator(time(0) + p * 1000);
     // std::default_random_engine generator(2+p);
-    if (P % env::processors_in_x_direction != 0) {
+    if (P % env::PROCESSORS_IN_X_DIRECTION != 0) {
         MPI_Finalize();
         return -1;
     }
     env::RegionCoordinates region_coordinates(p, P);
 
-    Region region(env::number_of_people, &region_coordinates, &generator);
+    Region region(env::NR_PEOPLE, &region_coordinates, &generator);
     if (p == 0) {
         Person* Mike = region.getRandomPerson();
         Mike->getInfected(&generator);
@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
     printStatus(region, -1);
     int iteration = 0;
     int vis_freq = (int) (0.1/env::TIME_STEP);
-    for (float t = 0; t <= env::nrDays; t += env::TIME_STEP) {
+    for (float t = 0; t <= env::NR_DAYS; t += env::TIME_STEP) {
         bool change = communicate(&region, &generator);
 
         if (DEBUG) {
