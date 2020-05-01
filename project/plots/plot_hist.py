@@ -38,5 +38,7 @@ if __name__ == "__main__":
     plt.plot(list(range(S_sum.shape[0])), I_sum, label="Infectious")
     plt.plot(list(range(S_sum.shape[0])), R_sum, label="Recovered")
     plt.legend()
+    plt.xlabel("Time")
+    plt.ylabel("People")
     plt.savefig("data/hist.png")
     plt.show()

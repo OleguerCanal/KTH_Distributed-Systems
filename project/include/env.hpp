@@ -11,7 +11,7 @@ namespace env {
 
     // Constant values
     const float TIME_STEP = 0.00001;
-    const int nrDays = 10;
+    const int nrDays = 50;
     const float INFECTION_RATE = 0.00005;// 0.00008;
     const float SPEED = 10;
     const float infection_distance_ = 0.04;

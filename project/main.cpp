@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
     double start_time = MPI_Wtime();
 
     env::processors_in_x_direction = std::min(P, 2);
+    // env::processors_in_x_direction = 1;
     env::number_of_people = atoi(argv[1])/P;
     env::world_size_ = (float) atoi(argv[2]);
 
@@ -91,9 +92,10 @@ int main(int argc, char** argv) {
             if (change)
                 printStatus(region, t);
 
-            if (iteration%vis_freq == 0)
+            if (iteration%vis_freq == 0) {
                 save_people_pos(region, p, P);
-                // save_hist_data(region, p, P);
+                save_hist_data(region, p, P);
+            }
             iteration += 1;
         }
     }
