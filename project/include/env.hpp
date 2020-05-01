@@ -5,20 +5,23 @@
 #include <sstream>
 namespace env {
     // User-defined
-    extern float world_size_;
-    extern int processors_in_x_direction;
-    extern int number_of_people; // per region
+    extern float WORLD_SIZE;
+    extern int PROCESSORS_IN_X_DIRECTION;
+    extern int NR_PEOPLE; // per region
 
     // Constant values
-    const float TIME_STEP = 0.00001;
-    const int nrDays = 10;
-    const float INFECTION_RATE = 0.00005;// 0.00008;
-    const float SPEED = 10;
-    const float infection_distance_ = 0.04;
-    const float infection_distance_squared_ = infection_distance_ * infection_distance_;
+    const int NR_DAYS = 150;
+    const float TIME_STEP = 0.01;                 // Check REGION_SIZE/BASE_SPEED/sqrt(TIME_STEP) > 10 !!!
+    const float BASE_SPEED = 10.0;                // in metres (A person moves base_speed*K a day on average (K=sqrt(pi/2)=0.79788))
+    const float INFECTION_RATE_PER_MINUTE = 0.1;  // Have a 0.1 chance for every minute close to an infected to get infected
+
+    const float INFECTION_RATE = 1-pow(1 - INFECTION_RATE_PER_MINUTE,24.0*60.0*TIME_STEP);
+    const float SPEED = BASE_SPEED *sqrt(TIME_STEP);  // Make movement time step independant
+    const float INFECTION_DISTANCE = 1;               // Infect at one meter
+    const float INFECTION_DISTANCE_SQUARED = INFECTION_DISTANCE * INFECTION_DISTANCE;
 
     const std::gamma_distribution<float> recovery_time_distrib = std::gamma_distribution<float>(10.0, 2.0 / 3.0);
-    const std::normal_distribution<float> movement_distrib = std::normal_distribution<float>(0.0, env::TIME_STEP);
+    const std::normal_distribution<float> movement_distrib = std::normal_distribution<float>(0.0, SPEED);
 
     struct boundary {
         float left;
@@ -37,18 +40,18 @@ namespace env {
         RegionCoordinates(int processor, int Processors) {
             p = processor;
             P = Processors;
-            px = p % env::processors_in_x_direction;
-            py = p / env::processors_in_x_direction;
-            Px = env::processors_in_x_direction;
-            Py = P / env::processors_in_x_direction;
+            px = p % env::PROCESSORS_IN_X_DIRECTION;
+            py = p / env::PROCESSORS_IN_X_DIRECTION;
+            Px = env::PROCESSORS_IN_X_DIRECTION;
+            Py = P / env::PROCESSORS_IN_X_DIRECTION;
 
             color = "red";
             if ((px + py)%2 == 0) color = "black";
 
-            bound.left = (env::world_size_ / (float)(Px)) * (float)(px);
-            bound.right = (env::world_size_ / (float)(Px)) * (float)((px + 1));
-            bound.upper = (env::world_size_ / (float)(Py)) * (float)((py + 1));
-            bound.lower = (env::world_size_ / (float)(Py)) * (float)((py));
+            bound.left = (env::WORLD_SIZE / (float)(Px)) * (float)(px);
+            bound.right = (env::WORLD_SIZE / (float)(Px)) * (float)((px + 1));
+            bound.upper = (env::WORLD_SIZE / (float)(Py)) * (float)((py + 1));
+            bound.lower = (env::WORLD_SIZE / (float)(Py)) * (float)((py));
         }
 
         int get_right_region_processor() {
@@ -60,11 +63,11 @@ namespace env {
         }
 
         int get_above_region_processor() {
-            return get_processor(px, (py+Py-1)%Py);  // I add P to make it cyclic
+            return get_processor(px, (py+1)%Py);  // I add P to make it cyclic
         }
 
         int get_below_region_processor() {
-            return get_processor(px, (py+1)%Py);
+            return get_processor(px, (py+Py-1)%Py);
         }
 
         std::string get_info() {
@@ -75,10 +78,10 @@ namespace env {
     
       private:
         int get_processor(int x, int y) {
-            return x + env::processors_in_x_direction * y;
+            return x + env::PROCESSORS_IN_X_DIRECTION * y;
         }
         int get_processor() {
-            return px + env::processors_in_x_direction * py;
+            return px + env::PROCESSORS_IN_X_DIRECTION * py;
         }
     };
 }

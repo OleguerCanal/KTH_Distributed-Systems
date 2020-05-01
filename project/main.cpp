@@ -11,11 +11,12 @@
 #include <helper.hpp>
 
 bool DEBUG = false;  // Turn true if you wanna print and save histogram data (SLOWER)
+int m = 0;
 
 namespace env {
-    float world_size_ = 1.0;
-    int processors_in_x_direction = 2;
-    int number_of_people = 100; // per region
+    float WORLD_SIZE = 10.0;
+    int PROCESSORS_IN_X_DIRECTION = 2;
+    int NR_PEOPLE = 5000; // per region
 }
 
 void printStatus(Region &region, float t) {
@@ -40,13 +41,14 @@ bool communicate(Region *region, std::default_random_engine *generator) {
     region->movePeople(generator, &people_to_prev_region_infectious, &people_to_next_region_infectious, &people_to_above_region_infectious, &people_to_below_region_infectious, &people_to_prev_region, &people_to_next_region, &people_to_above_region, &people_to_below_region, &border_people);
     exchange_people(*(region->coordinates), people_to_prev_region_infectious, people_to_next_region_infectious, people_to_above_region_infectious, people_to_below_region_infectious, people_to_prev_region, people_to_next_region, people_to_above_region, people_to_below_region, &immigrant_people, &border_people);
     std::sort(border_people.begin(), border_people.end());
+    m += immigrant_people.size();
     region->addPeople(immigrant_people);
     bool change = region->updateStatus(generator,&border_people);
     return change;
 }
 
 int main(int argc, char** argv) {
-    if (argc != 3) {
+    if (argc != 4) {
         printf("Wrong number of arguments");
         return 0;
     }
@@ -58,42 +60,46 @@ int main(int argc, char** argv) {
     std::cout.precision(6);
     double start_time = MPI_Wtime();
 
-    env::processors_in_x_direction = std::min(P, 2);
-    env::number_of_people = atoi(argv[1])/P;
-    env::world_size_ = (float) atoi(argv[2]);
+    env::PROCESSORS_IN_X_DIRECTION = atoi(argv[3]);
+    env::NR_PEOPLE = atoi(argv[1])/P;
+    env::WORLD_SIZE = (float) atoi(argv[2]);
 
     if (p == 0 )
-        std::cout << "P:" << P << ", n:" << env::number_of_people
-        << ", N:" << P*env::number_of_people
-        << ", WS:" << env::world_size_ << std::endl;
+        std::cout << "P:" << P << ", n:" << env::NR_PEOPLE
+        << ", N:" << P*env::NR_PEOPLE
+        << ", WS:" << env::WORLD_SIZE
+        << ", IR:" << env::INFECTION_RATE << std::endl; // Infection rate per time step
 
-    std::default_random_engine generator(time(0) + p * 1000);
-    // std::default_random_engine generator(2+p);
-    if (P % env::processors_in_x_direction != 0) {
+    // std::default_random_engine generator(time(0) + p * 1000);
+    std::default_random_engine generator(p);
+    if (P % env::PROCESSORS_IN_X_DIRECTION != 0) {
         MPI_Finalize();
         return -1;
     }
     env::RegionCoordinates region_coordinates(p, P);
 
-    Region region(env::number_of_people, &region_coordinates, &generator);
+    Region region(env::NR_PEOPLE, &region_coordinates, &generator);
     if (p == 0) {
         Person* Mike = region.getRandomPerson();
         Mike->getInfected(&generator);
     }
+    // std::cout << region_coordinates.px << ", " << region_coordinates.py << ". People size: " << region.people_.size() << std::endl;
+
 
     printStatus(region, -1);
     int iteration = 0;
     int vis_freq = (int) (0.1/env::TIME_STEP);
-    for (float t = 0; t <= env::nrDays; t += env::TIME_STEP) {
+    for (float t = 0; t <= env::NR_DAYS; t += env::TIME_STEP) {
         bool change = communicate(&region, &generator);
 
         if (DEBUG) {
             if (change)
                 printStatus(region, t);
 
-            if (iteration%vis_freq == 0)
+            if (iteration%vis_freq == 0) {
                 save_people_pos(region, p, P);
-                // save_hist_data(region, p, P);
+                save_hist_data(region, p, P);
+            }
             iteration += 1;
         }
     }
@@ -105,9 +111,12 @@ int main(int argc, char** argv) {
         std::ofstream myfile;
         myfile.open("TIMES.txt", std::ios_base::app | std::ios_base::out);
         // P, TotalNumPeople, WorldSize
-        myfile << P << "," << argv[1] << "," << argv[2] << "," << exec_time << "\n";
+        myfile << P << "," << argv[3] << "," << argv[1] << "," << exec_time << "\n";
         myfile.close();
     }
+
+    // std::cout << region_coordinates.px << ", " << region_coordinates.py << ", m: " << m/(env::NR_DAYS/env::TIME_STEP) << std::endl;
+    // std::cout << region_coordinates.px << ", " << region_coordinates.py << ". People size: " << region.people_.size() << std::endl;
 
     MPI_Finalize();
 }
