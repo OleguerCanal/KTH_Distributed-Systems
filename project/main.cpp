@@ -11,6 +11,7 @@
 #include <helper.hpp>
 
 bool DEBUG = true;  // Turn true if you wanna print and save histogram data (SLOWER)
+int m = 0;
 
 namespace env {
     float WORLD_SIZE = 10.0;
@@ -40,13 +41,19 @@ bool communicate(Region *region, std::default_random_engine *generator) {
     region->movePeople(generator, &people_to_prev_region_infectious, &people_to_next_region_infectious, &people_to_above_region_infectious, &people_to_below_region_infectious, &people_to_prev_region, &people_to_next_region, &people_to_above_region, &people_to_below_region, &border_people);
     exchange_people(*(region->coordinates), people_to_prev_region_infectious, people_to_next_region_infectious, people_to_above_region_infectious, people_to_below_region_infectious, people_to_prev_region, people_to_next_region, people_to_above_region, people_to_below_region, &immigrant_people, &border_people);
     std::sort(border_people.begin(), border_people.end());
+    m += immigrant_people.size();
+    // if (immigrant_people.size() > 0)
+    //     for (Person pers : immigrant_people) {
+    //         std::stringstream msg;
+    //         msg << region->
+    //     }
     region->addPeople(immigrant_people);
     bool change = region->updateStatus(generator,&border_people);
     return change;
 }
 
 int main(int argc, char** argv) {
-    if (argc != 3) {
+    if (argc != 4) {
         printf("Wrong number of arguments");
         return 0;
     }
@@ -58,17 +65,18 @@ int main(int argc, char** argv) {
     std::cout.precision(6);
     double start_time = MPI_Wtime();
 
-    env::PROCESSORS_IN_X_DIRECTION = std::min(P, 2);
+    env::PROCESSORS_IN_X_DIRECTION = atoi(argv[3]);
     env::NR_PEOPLE = atoi(argv[1])/P;
     env::WORLD_SIZE = (float) atoi(argv[2]);
 
     if (p == 0 )
         std::cout << "P:" << P << ", n:" << env::NR_PEOPLE
         << ", N:" << P*env::NR_PEOPLE
-        << ", WS:" << env::WORLD_SIZE << ", IR:" << env::INFECTION_RATE << std::endl; // Infection rate per time step
+        << ", WS:" << env::WORLD_SIZE
+        << ", IR:" << env::INFECTION_RATE << std::endl; // Infection rate per time step
 
-    std::default_random_engine generator(time(0) + p * 1000);
-    // std::default_random_engine generator(2+p);
+    // std::default_random_engine generator(time(0) + p * 1000);
+    std::default_random_engine generator(p);
     if (P % env::PROCESSORS_IN_X_DIRECTION != 0) {
         MPI_Finalize();
         return -1;
@@ -80,6 +88,8 @@ int main(int argc, char** argv) {
         Person* Mike = region.getRandomPerson();
         Mike->getInfected(&generator);
     }
+    std::cout << region_coordinates.px << ", " << region_coordinates.py << ". People size: " << region.people_.size() << std::endl;
+
 
     printStatus(region, -1);
     int iteration = 0;
@@ -109,6 +119,9 @@ int main(int argc, char** argv) {
         myfile << P << "," << argv[1] << "," << argv[2] << "," << exec_time << "\n";
         myfile.close();
     }
+
+    std::cout << region_coordinates.px << ", " << region_coordinates.py << ", m: " << m/(env::NR_DAYS/env::TIME_STEP) << std::endl;
+    std::cout << region_coordinates.px << ", " << region_coordinates.py << ". People size: " << region.people_.size() << std::endl;
 
     MPI_Finalize();
 }

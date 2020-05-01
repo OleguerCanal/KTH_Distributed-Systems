@@ -10,7 +10,7 @@ namespace env {
     extern int NR_PEOPLE; // per region
 
     // Constant values
-    const int NR_DAYS = 10;
+    const int NR_DAYS = 150;
     const float TIME_STEP = 0.01;                 // Check REGION_SIZE/BASE_SPEED/sqrt(TIME_STEP) > 10 !!!
     const float BASE_SPEED = 10.0;                // in metres (A person moves base_speed*K a day on average (K=sqrt(pi/2)=0.79788))
     const float INFECTION_RATE_PER_MINUTE = 0.1;  // Have a 0.1 chance for every minute close to an infected to get infected
@@ -63,11 +63,11 @@ namespace env {
         }
 
         int get_above_region_processor() {
-            return get_processor(px, (py+Py-1)%Py);  // I add P to make it cyclic
+            return get_processor(px, (py+1)%Py);  // I add P to make it cyclic
         }
 
         int get_below_region_processor() {
-            return get_processor(px, (py+1)%Py);
+            return get_processor(px, (py+Py-1)%Py);
         }
 
         std::string get_info() {

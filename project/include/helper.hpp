@@ -234,7 +234,7 @@ void exchange_people(env::RegionCoordinates r_coord,
             receive_people(r_coord.get_below_region_processor(), immigrant_people);
             receive_people(r_coord.get_below_region_processor(), border_people);
         }
-        else {
+        if (r_coord.color == "red") {
             // Exchange down
             receive_people(r_coord.get_below_region_processor(), immigrant_people);
             receive_people(r_coord.get_below_region_processor(), border_people);
