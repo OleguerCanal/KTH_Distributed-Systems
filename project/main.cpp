@@ -10,7 +10,7 @@
 #include <env.hpp>
 #include <helper.hpp>
 
-bool DEBUG = true;  // Turn true if you wanna print and save histogram data (SLOWER)
+bool DEBUG = false;  // Turn true if you wanna print and save histogram data (SLOWER)
 
 namespace env {
     float world_size_ = 1.0;

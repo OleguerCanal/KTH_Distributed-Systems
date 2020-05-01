@@ -1,0 +1,185 @@
+-- The C compiler identification is GNU 7.5.0
+-- The CXX compiler identification is GNU 7.5.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found MPI_C: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so (found version "3.1") 
+-- Found MPI_CXX: /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so (found version "3.1") 
+-- Found MPI: TRUE (found version "3.1")  
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/oleguer/projects/KTH_Distributed-Systems/project/build
+Scanning dependencies of target my_mpi_bin
+[ 25%] Building CXX object CMakeFiles/my_mpi_bin.dir/main.cpp.o
+[ 50%] Building CXX object CMakeFiles/my_mpi_bin.dir/src/person.cpp.o
+[ 75%] Building CXX object CMakeFiles/my_mpi_bin.dir/src/region.cpp.o
+[100%] Linking CXX executable my_mpi_bin
+[100%] Built target my_mpi_bin
+P:1, n:50, N:50, WS:1
+The process took 4.1338 seconds to run.
+P:1, n:50, N:50, WS:4
+The process took 3.86972 seconds to run.
+P:1, n:50, N:50, WS:8
+The process took 3.7191 seconds to run.
+P:1, n:50, N:50, WS:16
+The process took 3.68208 seconds to run.
+P:1, n:500, N:500, WS:1
+P:1, n:500, N:500, WS:4
+The process took 51.4184 seconds to run.
+P:1, n:500, N:500, WS:8
+The process took 46.3238 seconds to run.
+P:1, n:500, N:500, WS:16
+The process took 43.3321 seconds to run.
+P:1, n:1000, N:1000, WS:1
+The process took 231.598 seconds to run.
+P:1, n:1000, N:1000, WS:4
+The process took 126.863 seconds to run.
+P:1, n:1000, N:1000, WS:8
+The process took 104.778 seconds to run.
+P:1, n:1000, N:1000, WS:16
+The process took 91.5708 seconds to run.
+P:1, n:3000, N:3000, WS:1
+The process took 1280.08 seconds to run.
+P:1, n:3000, N:3000, WS:4
+The process took 577.805 seconds to run.
+P:1, n:3000, N:3000, WS:8
+The process took 457.554 seconds to run.
+P:1, n:3000, N:3000, WS:16
+The process took 359.301 seconds to run.
+P:1, n:6000, N:6000, WS:1
+The process took 4352.26 seconds to run.
+P:1, n:6000, N:6000, WS:4
+The process took 1756.89 seconds to run.
+P:1, n:6000, N:6000, WS:8
+The process took 1150.43 seconds to run.
+P:1, n:6000, N:6000, WS:16
+The process took 888.116 seconds to run.
+P:2, n:25, N:50, WS:1
+The process took 3.30492 seconds to run.
+P:2, n:25, N:50, WS:4
+The process took 3.14857 seconds to run.
+P:2, n:25, N:50, WS:8
+The process took 3.12978 seconds to run.
+P:2, n:25, N:50, WS:16
+The process took 3.09814 seconds to run.
+P:2, n:250, N:500, WS:1
+The process took 48.1623 seconds to run.
+P:2, n:250, N:500, WS:4
+The process took 25.5087 seconds to run.
+P:2, n:250, N:500, WS:8
+The process took 23.167 seconds to run.
+P:2, n:250, N:500, WS:16
+The process took 22.2325 seconds to run.
+P:2, n:500, N:1000, WS:1
+The process took 122.738 seconds to run.
+P:2, n:500, N:1000, WS:4
+The process took 62.1021 seconds to run.
+P:2, n:500, N:1000, WS:8
+The process took 51.127 seconds to run.
+P:2, n:500, N:1000, WS:16
+The process took 46.043 seconds to run.
+P:2, n:1500, N:3000, WS:1
+The process took 660.535 seconds to run.
+P:2, n:1500, N:3000, WS:4
+The process took 292.068 seconds to run.
+P:2, n:1500, N:3000, WS:8
+The process took 221.022 seconds to run.
+P:2, n:1500, N:3000, WS:16
+The process took 171.095 seconds to run.
+P:2, n:3000, N:6000, WS:1
+The process took 2192.67 seconds to run.
+P:2, n:3000, N:6000, WS:4
+The process took 872.638 seconds to run.
+P:2, n:3000, N:6000, WS:8
+The process took 601.615 seconds to run.
+P:2, n:3000, N:6000, WS:16
+The process took 445.116 seconds to run.
+P:4, n:12, N:48, WS:1
+The process took 3.83752 seconds to run.
+P:4, n:12, N:48, WS:4
+The process took 3.57277 seconds to run.
+P:4, n:12, N:48, WS:8
+The process took 3.58141 seconds to run.
+P:4, n:12, N:48, WS:16
+The process took 3.50479 seconds to run.
+P:4, n:125, N:500, WS:1
+The process took 26.1918 seconds to run.
+P:4, n:125, N:500, WS:4
+The process took 14.1196 seconds to run.
+P:4, n:125, N:500, WS:8
+The process took 13.6126 seconds to run.
+P:4, n:125, N:500, WS:16
+The process took 13.2195 seconds to run.
+P:4, n:250, N:1000, WS:1
+The process took 61.7505 seconds to run.
+P:4, n:250, N:1000, WS:4
+The process took 31.7914 seconds to run.
+P:4, n:250, N:1000, WS:8
+The process took 27.687 seconds to run.
+P:4, n:250, N:1000, WS:16
+The process took 26.2397 seconds to run.
+P:4, n:750, N:3000, WS:1
+The process took 279.265 seconds to run.
+P:4, n:750, N:3000, WS:4
+The process took 123.084 seconds to run.
+P:4, n:750, N:3000, WS:8
+The process took 98.0136 seconds to run.
+P:4, n:750, N:3000, WS:16
+The process took 83.9518 seconds to run.
+P:4, n:1500, N:6000, WS:1
+The process took 829.287 seconds to run.
+P:4, n:1500, N:6000, WS:4
+The process took 334.532 seconds to run.
+P:4, n:1500, N:6000, WS:8
+The process took 237.856 seconds to run.
+P:4, n:1500, N:6000, WS:16
+The process took 196.756 seconds to run.
+P:8, n:6, N:48, WS:1
+The process took 10.8215 seconds to run.
+P:8, n:6, N:48, WS:4
+The process took 9.74912 seconds to run.
+P:8, n:6, N:48, WS:8
+The process took 9.5349 seconds to run.
+P:8, n:6, N:48, WS:16
+The process took 9.55161 seconds to run.
+P:8, n:62, N:496, WS:1
+The process took 46.218 seconds to run.
+P:8, n:62, N:496, WS:4
+The process took 21.639 seconds to run.
+P:8, n:62, N:496, WS:8
+The process took 19.4355 seconds to run.
+P:8, n:62, N:496, WS:16
+The process took 17.382 seconds to run.
+P:8, n:125, N:1000, WS:1
+The process took 93.4963 seconds to run.
+P:8, n:125, N:1000, WS:4
+The process took 36.4143 seconds to run.
+P:8, n:125, N:1000, WS:8
+The process took 32.0428 seconds to run.
+P:8, n:125, N:1000, WS:16
+The process took 28.972 seconds to run.
+P:8, n:375, N:3000, WS:1
+The process took 344.467 seconds to run.
+P:8, n:375, N:3000, WS:4
+The process took 121.257 seconds to run.
+P:8, n:375, N:3000, WS:8
+The process took 90.4398 seconds to run.
+P:8, n:375, N:3000, WS:16
+The process took 74.5229 seconds to run.
+P:8, n:750, N:6000, WS:1
+The process took 886.338 seconds to run.
+P:8, n:750, N:6000, WS:4
+The process took 274.985 seconds to run.
+P:8, n:750, N:6000, WS:8
+The process took 197.731 seconds to run.
+P:8, n:750, N:6000, WS:16
+The process took 163.25 seconds to run.

@@ -13,9 +13,9 @@ cd ..
 
 for P in 1 2 4 8
 do
-    for N in 3000
+    for N in 50 500 1000 3000 6000
     do
-        for WS in 1 2 4
+        for WS in 1 4 8 16
         do
             mpirun -n $P build/my_mpi_bin $N $WS
         done
