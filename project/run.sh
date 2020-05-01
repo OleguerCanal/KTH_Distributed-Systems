@@ -5,18 +5,23 @@ rm evolution.txt
 rm data/evolution.txt
 rm data/hist_data.txt
 
-P=8    # Number of processors
-p_x=2
-N=1000  # Total number of people (whole world)
+P=4    # Number of processors
+p_x=4
+# N=32000  # Total number of people (whole world)
 WS=500 # World size. Try to keep WS^2/N ~ 100
-mpirun -n $P build/my_mpi_bin $N $WS $p_x
-python plots/visualize.py
-python plots/plot_hist.py
+# mpirun -n $P build/my_mpi_bin $N $WS $p_x
+# python plots/visualize.py
+# python plots/plot_hist.py
 
 # for p_x in 8 4 2 1
 # do
 #     mpirun -n $P build/my_mpi_bin $N $WS $p_x
 # done
+
+for N in 1000 2000 4000 8000 16000 32000
+do
+    mpirun -n $P build/my_mpi_bin $N $WS $p_x
+done
 
 # for P in 1 4 8
 # do
