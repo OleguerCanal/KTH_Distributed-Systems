@@ -10,7 +10,7 @@
 #include <env.hpp>
 #include <helper.hpp>
 
-bool DEBUG = false;  // Turn true if you wanna print and save histogram data (SLOWER)
+bool DEBUG = true;  // Turn true if you wanna print and save histogram data (SLOWER)
 int m = 0;
 
 namespace env {
