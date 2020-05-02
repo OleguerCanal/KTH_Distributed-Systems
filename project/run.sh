@@ -34,6 +34,8 @@ rm data/hist_data.txt
 #     done
 # done
 
+# module add i-compilers intelmpi
+
 
 WS_base=500
 

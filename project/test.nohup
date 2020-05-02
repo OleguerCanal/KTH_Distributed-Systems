@@ -111,3 +111,216 @@ The process took 134.644 seconds to run.
 P:2, n:50000, N:100000, WS:5000, IR:0.780673
 The process took 164.059 seconds to run.
 P:4, n:25000, N:100000, WS:5000, IR:0.780673
+The process took 72.7283 seconds to run.
+P:4, n:25000, N:100000, WS:5000, IR:0.780673
+The process took 82.6861 seconds to run.
+P:4, n:25000, N:100000, WS:5000, IR:0.780673
+The process took 99.0583 seconds to run.
+P:8, n:12500, N:100000, WS:5000, IR:0.780673
+The process took 50.0405 seconds to run.
+P:8, n:12500, N:100000, WS:5000, IR:0.780673
+The process took 65.6109 seconds to run.
+P:8, n:12500, N:100000, WS:5000, IR:0.780673
+The process took 71.4492 seconds to run.
+P:8, n:12500, N:100000, WS:5000, IR:0.780673
+The process took 82.4298 seconds to run.
+P:1, n:1000, N:1000, WS:500, IR:0.780673
+The process took 1.78714 seconds to run.
+P:2, n:500, N:1000, WS:500, IR:0.780673
+The process took 0.930992 seconds to run.
+P:2, n:500, N:1000, WS:500, IR:0.780673
+The process took 0.983391 seconds to run.
+P:4, n:250, N:1000, WS:500, IR:0.780673
+The process took 0.509465 seconds to run.
+P:4, n:250, N:1000, WS:500, IR:0.780673
+The process took 0.570714 seconds to run.
+P:4, n:250, N:1000, WS:500, IR:0.780673
+The process took 0.555722 seconds to run.
+P:8, n:125, N:1000, WS:500, IR:0.780673
+The process took 0.415705 seconds to run.
+P:8, n:125, N:1000, WS:500, IR:0.780673
+The process took 0.50547 seconds to run.
+P:8, n:125, N:1000, WS:500, IR:0.780673
+The process took 0.529882 seconds to run.
+P:8, n:125, N:1000, WS:500, IR:0.780673
+The process took 0.501939 seconds to run.
+P:1, n:4000, N:4000, WS:1000, IR:0.780673
+The process took 8.28648 seconds to run.
+P:2, n:2000, N:4000, WS:1000, IR:0.780673
+The process took 4.04113 seconds to run.
+P:2, n:2000, N:4000, WS:1000, IR:0.780673
+The process took 4.44962 seconds to run.
+P:4, n:1000, N:4000, WS:1000, IR:0.780673
+The process took 2.15048 seconds to run.
+P:4, n:1000, N:4000, WS:1000, IR:0.780673
+The process took 2.34136 seconds to run.
+P:4, n:1000, N:4000, WS:1000, IR:0.780673
+The process took 2.5196 seconds to run.
+P:8, n:500, N:4000, WS:1000, IR:0.780673
+The process took 1.68577 seconds to run.
+P:8, n:500, N:4000, WS:1000, IR:0.780673
+The process took 1.92059 seconds to run.
+P:8, n:500, N:4000, WS:1000, IR:0.780673
+The process took 2.05602 seconds to run.
+P:8, n:500, N:4000, WS:1000, IR:0.780673
+The process took 2.10128 seconds to run.
+P:1, n:16000, N:16000, WS:2000, IR:0.780673
+The process took 37.5962 seconds to run.
+P:2, n:8000, N:16000, WS:2000, IR:0.780673
+The process took 17.4288 seconds to run.
+P:2, n:8000, N:16000, WS:2000, IR:0.780673
+The process took 20.5037 seconds to run.
+P:4, n:4000, N:16000, WS:2000, IR:0.780673
+The process took 8.77289 seconds to run.
+P:4, n:4000, N:16000, WS:2000, IR:0.780673
+The process took 10.18 seconds to run.
+P:4, n:4000, N:16000, WS:2000, IR:0.780673
+The process took 11.6252 seconds to run.
+P:8, n:2000, N:16000, WS:2000, IR:0.780673
+The process took 6.76927 seconds to run.
+P:8, n:2000, N:16000, WS:2000, IR:0.780673
+The process took 7.97959 seconds to run.
+P:8, n:2000, N:16000, WS:2000, IR:0.780673
+The process took 8.95709 seconds to run.
+P:8, n:2000, N:16000, WS:2000, IR:0.780673
+The process took 9.59064 seconds to run.
+P:1, n:64000, N:64000, WS:4000, IR:0.780673
+The process took 173.555 seconds to run.
+P:2, n:32000, N:64000, WS:4000, IR:0.780673
+The process took 77.2185 seconds to run.
+P:2, n:32000, N:64000, WS:4000, IR:0.780673
+The process took 96.1448 seconds to run.
+P:4, n:16000, N:64000, WS:4000, IR:0.780673
+The process took 37.9688 seconds to run.
+P:4, n:16000, N:64000, WS:4000, IR:0.780673
+The process took 45.8514 seconds to run.
+P:4, n:16000, N:64000, WS:4000, IR:0.780673
+The process took 56.3209 seconds to run.
+P:8, n:8000, N:64000, WS:4000, IR:0.780673
+The process took 27.7564 seconds to run.
+P:8, n:8000, N:64000, WS:4000, IR:0.780673
+The process took 35.3283 seconds to run.
+P:8, n:8000, N:64000, WS:4000, IR:0.780673
+The process took 41.6667 seconds to run.
+P:8, n:8000, N:64000, WS:4000, IR:0.780673
+The process took 47.3768 seconds to run.
+P:1, n:100000, N:100000, WS:5000, IR:0.780673
+The process took 298.119 seconds to run.
+P:2, n:50000, N:100000, WS:5000, IR:0.780673
+The process took 135.106 seconds to run.
+P:2, n:50000, N:100000, WS:5000, IR:0.780673
+The process took 164.056 seconds to run.
+P:4, n:25000, N:100000, WS:5000, IR:0.780673
+The process took 72.8266 seconds to run.
+P:4, n:25000, N:100000, WS:5000, IR:0.780673
+The process took 82.9699 seconds to run.
+P:4, n:25000, N:100000, WS:5000, IR:0.780673
+The process took 99.6244 seconds to run.
+P:8, n:12500, N:100000, WS:5000, IR:0.780673
+The process took 50.1639 seconds to run.
+P:8, n:12500, N:100000, WS:5000, IR:0.780673
+The process took 60.3841 seconds to run.
+P:8, n:12500, N:100000, WS:5000, IR:0.780673
+The process took 72.1473 seconds to run.
+P:8, n:12500, N:100000, WS:5000, IR:0.780673
+The process took 82.5659 seconds to run.
+P:1, n:1000, N:1000, WS:500, IR:0.780673
+The process took 1.78473 seconds to run.
+P:2, n:500, N:1000, WS:500, IR:0.780673
+The process took 0.935391 seconds to run.
+P:2, n:500, N:1000, WS:500, IR:0.780673
+The process took 0.987475 seconds to run.
+P:4, n:250, N:1000, WS:500, IR:0.780673
+The process took 0.523187 seconds to run.
+P:4, n:250, N:1000, WS:500, IR:0.780673
+The process took 0.553099 seconds to run.
+P:4, n:250, N:1000, WS:500, IR:0.780673
+The process took 0.555808 seconds to run.
+P:8, n:125, N:1000, WS:500, IR:0.780673
+The process took 0.423644 seconds to run.
+P:8, n:125, N:1000, WS:500, IR:0.780673
+The process took 0.498211 seconds to run.
+P:8, n:125, N:1000, WS:500, IR:0.780673
+The process took 0.530106 seconds to run.
+P:8, n:125, N:1000, WS:500, IR:0.780673
+The process took 0.490032 seconds to run.
+P:1, n:4000, N:4000, WS:1000, IR:0.780673
+The process took 8.28673 seconds to run.
+P:2, n:2000, N:4000, WS:1000, IR:0.780673
+The process took 4.04998 seconds to run.
+P:2, n:2000, N:4000, WS:1000, IR:0.780673
+The process took 4.44152 seconds to run.
+P:4, n:1000, N:4000, WS:1000, IR:0.780673
+The process took 2.14281 seconds to run.
+P:4, n:1000, N:4000, WS:1000, IR:0.780673
+The process took 2.35493 seconds to run.
+P:4, n:1000, N:4000, WS:1000, IR:0.780673
+The process took 2.55053 seconds to run.
+P:8, n:500, N:4000, WS:1000, IR:0.780673
+The process took 1.66656 seconds to run.
+P:8, n:500, N:4000, WS:1000, IR:0.780673
+The process took 1.92257 seconds to run.
+P:8, n:500, N:4000, WS:1000, IR:0.780673
+The process took 2.0596 seconds to run.
+P:8, n:500, N:4000, WS:1000, IR:0.780673
+The process took 2.1425 seconds to run.
+P:1, n:16000, N:16000, WS:2000, IR:0.780673
+The process took 37.4498 seconds to run.
+P:2, n:8000, N:16000, WS:2000, IR:0.780673
+The process took 17.3834 seconds to run.
+P:2, n:8000, N:16000, WS:2000, IR:0.780673
+The process took 20.6497 seconds to run.
+P:4, n:4000, N:16000, WS:2000, IR:0.780673
+The process took 8.77988 seconds to run.
+P:4, n:4000, N:16000, WS:2000, IR:0.780673
+The process took 10.148 seconds to run.
+P:4, n:4000, N:16000, WS:2000, IR:0.780673
+The process took 11.5872 seconds to run.
+P:8, n:2000, N:16000, WS:2000, IR:0.780673
+The process took 6.78238 seconds to run.
+P:8, n:2000, N:16000, WS:2000, IR:0.780673
+The process took 7.98619 seconds to run.
+P:8, n:2000, N:16000, WS:2000, IR:0.780673
+The process took 8.92777 seconds to run.
+P:8, n:2000, N:16000, WS:2000, IR:0.780673
+The process took 9.59955 seconds to run.
+P:1, n:64000, N:64000, WS:4000, IR:0.780673
+The process took 173.328 seconds to run.
+P:2, n:32000, N:64000, WS:4000, IR:0.780673
+The process took 76.8017 seconds to run.
+P:2, n:32000, N:64000, WS:4000, IR:0.780673
+The process took 96.1767 seconds to run.
+P:4, n:16000, N:64000, WS:4000, IR:0.780673
+The process took 38.0031 seconds to run.
+P:4, n:16000, N:64000, WS:4000, IR:0.780673
+The process took 45.6016 seconds to run.
+P:4, n:16000, N:64000, WS:4000, IR:0.780673
+The process took 56.1927 seconds to run.
+P:8, n:8000, N:64000, WS:4000, IR:0.780673
+The process took 27.511 seconds to run.
+P:8, n:8000, N:64000, WS:4000, IR:0.780673
+The process took 35.0383 seconds to run.
+P:8, n:8000, N:64000, WS:4000, IR:0.780673
+The process took 41.593 seconds to run.
+P:8, n:8000, N:64000, WS:4000, IR:0.780673
+The process took 47.1729 seconds to run.
+P:1, n:100000, N:100000, WS:5000, IR:0.780673
+The process took 300.397 seconds to run.
+P:2, n:50000, N:100000, WS:5000, IR:0.780673
+The process took 131.545 seconds to run.
+P:2, n:50000, N:100000, WS:5000, IR:0.780673
+The process took 164.363 seconds to run.
+P:4, n:25000, N:100000, WS:5000, IR:0.780673
+The process took 72.6873 seconds to run.
+P:4, n:25000, N:100000, WS:5000, IR:0.780673
+The process took 82.9129 seconds to run.
+P:4, n:25000, N:100000, WS:5000, IR:0.780673
+The process took 98.5631 seconds to run.
+P:8, n:12500, N:100000, WS:5000, IR:0.780673
+The process took 49.5189 seconds to run.
+P:8, n:12500, N:100000, WS:5000, IR:0.780673
+The process took 62.807 seconds to run.
+P:8, n:12500, N:100000, WS:5000, IR:0.780673
+The process took 72.1182 seconds to run.
+P:8, n:12500, N:100000, WS:5000, IR:0.780673
+The process took 81.5296 seconds to run.
