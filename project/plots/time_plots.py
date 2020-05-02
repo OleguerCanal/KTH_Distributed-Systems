@@ -20,7 +20,7 @@ def read_file(filepath):
         line = fp.readline()
         while line:
             p, px, n, t = parse_line(line)
-            data[p][px][n] = t/4  # I DIVIDE BY 4 because we take an average of 4 runs!!!!!!!
+            data[p][px][n] = t  # No need to divide since the result is relative, just make sure its consistent
             line = fp.readline()
     return data
 
@@ -38,7 +38,7 @@ for p_indx, p in enumerate(data.keys()):
             times.append(data[1][1][n]/data[p][p_x][n])
         axs[p_indx-1].plot(people, times, label=str(p_x) + "x" + str(int(p/p_x)) + " processors")
         axs[p_indx-1].set_xlabel("x1000 People")
-        axs[p_indx-1].set_ylim(1, 6)
+        axs[p_indx-1].set_ylim(1, 8)
         axs[p_indx-1].legend()
 
 axs[0].set_ylabel("Speedup")

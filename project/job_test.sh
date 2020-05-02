@@ -6,9 +6,9 @@ cmake ..
 make
 cd ..
 
-WS_base=500 # World size. Try to keep WS^2/N ~ 100
+WS_base=500
 
-for i in 1 2 3 4
+for i in 1 2 3
 do
     for num in 1 2 4 8 10
     do
