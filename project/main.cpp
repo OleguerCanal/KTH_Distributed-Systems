@@ -10,7 +10,7 @@
 #include <env.hpp>
 #include <helper.hpp>
 
-bool DEBUG = true;  // Turn true if you wanna print and save histogram data (SLOWER)
+bool DEBUG = false;  // Turn true if you wanna print and save histogram data (SLOWER)
 int m = 0;
 
 namespace env {
@@ -42,11 +42,6 @@ bool communicate(Region *region, std::default_random_engine *generator) {
     exchange_people(*(region->coordinates), people_to_prev_region_infectious, people_to_next_region_infectious, people_to_above_region_infectious, people_to_below_region_infectious, people_to_prev_region, people_to_next_region, people_to_above_region, people_to_below_region, &immigrant_people, &border_people);
     std::sort(border_people.begin(), border_people.end());
     m += immigrant_people.size();
-    // if (immigrant_people.size() > 0)
-    //     for (Person pers : immigrant_people) {
-    //         std::stringstream msg;
-    //         msg << region->
-    //     }
     region->addPeople(immigrant_people);
     bool change = region->updateStatus(generator,&border_people);
     return change;
@@ -88,7 +83,7 @@ int main(int argc, char** argv) {
         Person* Mike = region.getRandomPerson();
         Mike->getInfected(&generator);
     }
-    std::cout << region_coordinates.px << ", " << region_coordinates.py << ". People size: " << region.people_.size() << std::endl;
+    // std::cout << region_coordinates.px << ", " << region_coordinates.py << ". People size: " << region.people_.size() << std::endl;
 
 
     printStatus(region, -1);
@@ -116,12 +111,12 @@ int main(int argc, char** argv) {
         std::ofstream myfile;
         myfile.open("TIMES.txt", std::ios_base::app | std::ios_base::out);
         // P, TotalNumPeople, WorldSize
-        myfile << P << "," << argv[1] << "," << argv[2] << "," << exec_time << "\n";
+        myfile << P << "," << argv[3] << "," << argv[1] << "," << exec_time << "\n";
         myfile.close();
     }
 
-    std::cout << region_coordinates.px << ", " << region_coordinates.py << ", m: " << m/(env::NR_DAYS/env::TIME_STEP) << std::endl;
-    std::cout << region_coordinates.px << ", " << region_coordinates.py << ". People size: " << region.people_.size() << std::endl;
+    // std::cout << region_coordinates.px << ", " << region_coordinates.py << ", m: " << m/(env::NR_DAYS/env::TIME_STEP) << std::endl;
+    // std::cout << region_coordinates.px << ", " << region_coordinates.py << ". People size: " << region.people_.size() << std::endl;
 
     MPI_Finalize();
 }
