@@ -19,25 +19,29 @@ def read_file(filepath):
     with open(filepath) as fp:
         line = fp.readline()
         while line:
-            p, n, ws, t = parse_line(line)
-            data[ws][p][n] = t
+            p, px, n, t = parse_line(line)
+            data[p][px][n] = t/4  # I DIVIDE BY 4 because we take an average of 4 runs!!!!!!!
             line = fp.readline()
     return data
 
 data = read_file("TIMES.txt")
 
-fig, axs = plt.subplots(len(data.keys()))
-for ws_indx, ws in enumerate(data.keys()):
-    for p in data[ws].keys():
+fig, axs = plt.subplots(1, len(data.keys())-1)
+for p_indx, p in enumerate(data.keys()):
+    if p == 1:
+        continue
+    for p_x in data[p].keys():
         people = []
         times = []
-        for n in data[ws][p].keys():
-            people.append(n)
-            times.append(data[ws][p][n])
-        axs[ws_indx].plot(people, times, label=str(p) + " processors")
-        axs[ws_indx].set_ylabel("World size: " + str(ws) + "\nTime [s]")
+        for n in data[p][p_x].keys():
+            people.append(n/1000)
+            times.append(data[1][1][n]/data[p][p_x][n])
+        axs[p_indx-1].plot(people, times, label=str(p_x) + "x" + str(int(p/p_x)) + " processors")
+        axs[p_indx-1].set_xlabel("x1000 People")
+        axs[p_indx-1].set_ylim(1, 6)
+        axs[p_indx-1].legend()
 
-axs[-1].set_xlabel("People Simulated")
-plt.legend()
+axs[0].set_ylabel("Speedup")
 plt.suptitle("Execution Times")
+plt.savefig("figures/times.png")
 plt.show()

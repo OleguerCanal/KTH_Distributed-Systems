@@ -43,7 +43,7 @@ if __name__ == "__main__":
         print("m:", m)
         print("k:", k)
         print("i:", i)
-        T_p = n + m + n*math.log(n, 2) + k*n + (8000 + 2400*(m + i))
+        T_p = n + m + n*math.log(n, 2) + k*n + (8000 + 2400*(m + i))  # 8000 because t_startup is 1000 times slower than t_a or t_data, 2400 should be 24 but had to tune it a bit
         print("Speedup of", N, ":", T_1/T_p)
 
 
