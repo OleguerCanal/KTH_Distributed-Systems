@@ -10,18 +10,18 @@ namespace env {
     extern int NR_PEOPLE; // per region
 
     // Constant values
-    const int NR_DAYS = 150;
-    const float TIME_STEP = 0.01;                 // Check REGION_SIZE/BASE_SPEED/sqrt(TIME_STEP) > 10 !!!
-    const float BASE_SPEED = 10.0;                // in metres (A person moves base_speed*K a day on average (K=sqrt(pi/2)=0.79788))
-    const float INFECTION_RATE_PER_MINUTE = 0.1;  // Have a 0.1 chance for every minute close to an infected to get infected
+    const int NR_DAYS = 200;                        // Number of days to run the simulation
+    const float TIME_STEP = 0.01;                   // Discretization timestep (Check REGION_SIZE/BASE_SPEED/sqrt(TIME_STEP) > 10)
+    const float BASE_SPEED = 10.0;                  // in metres (A person moves base_speed*K a day on average (K=sqrt(pi/2)=0.79788))
+    const float INFECTION_RATE_PER_MINUTE = 0.1;    // Have a 0.1 chance for every minute close to an infected to get infected
 
-    const float INFECTION_RATE = 1-pow(1 - INFECTION_RATE_PER_MINUTE,24.0*60.0*TIME_STEP);
-    const float SPEED = BASE_SPEED *sqrt(TIME_STEP);  // Make movement time step independant
-    const float INFECTION_DISTANCE = 1;               // Infect at one meter
+    const float INFECTION_RATE = 1-pow(1 - INFECTION_RATE_PER_MINUTE,24.0*60.0*TIME_STEP);  // Make infection time step independant
+    const float SPEED = BASE_SPEED *sqrt(TIME_STEP);                                        // Make movement time step independant
+    const float INFECTION_DISTANCE = 1;                                                     // Infect at one meter
     const float INFECTION_DISTANCE_SQUARED = INFECTION_DISTANCE * INFECTION_DISTANCE;
 
-    const std::gamma_distribution<float> recovery_time_distrib = std::gamma_distribution<float>(10.0, 2.0 / 3.0);
-    const std::normal_distribution<float> movement_distrib = std::normal_distribution<float>(0.0, SPEED);
+    const std::gamma_distribution<float> recovery_time_distrib = std::gamma_distribution<float>(10.0, 2.0 / 3.0);   // Time till recovery
+    const std::normal_distribution<float> movement_distrib = std::normal_distribution<float>(0.0, SPEED);           // Movement
 
     struct boundary {
         float left;

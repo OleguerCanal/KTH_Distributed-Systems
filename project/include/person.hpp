@@ -29,8 +29,6 @@ class Person {
 
     bool isSusceptible();
 
-    std::string serialize();
-
     void print();
 
     bool operator<(const Person& other) const {

@@ -35,7 +35,7 @@ class AnimatedScatter(object):
         x, y, s, c = next(self.stream).T
         self.scat = self.ax.scatter(x, y, c=c, s=s, vmin=0, vmax=1,
                                     cmap="RdYlGn")
-        self.ax.axis([0, 500, 0, 500])
+        self.ax.axis([0, 200, 0, 200])
         self.ax.set_aspect('equal')
         # For FuncAnimation's sake, we need to return the artist we'll be using
         # Note that it expects a sequence of artists, thus the trailing comma.
@@ -63,7 +63,7 @@ class AnimatedScatter(object):
         # Set x and y data...
         self.scat.set_offsets(data[:, :2])
         # Set sizes...
-        self.scat.set_sizes(10*np.ones(data[:, 2].shape))
+        self.scat.set_sizes(50*np.ones(data[:, 2].shape))
         # Set colors..
         # print(data[:, 3])
         self.scat.set_array(data[:, 3])
