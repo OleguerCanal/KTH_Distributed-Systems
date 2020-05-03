@@ -6,12 +6,15 @@ cmake ..
 make
 cd ..
 
-WS=500 # World size. Try to keep WS^2/N ~ 100
+WS_base=500
 
-for i in 1 2 3 4
+for i in 1 2 3
 do
-    for N in 1000 2000 16000 32000 64000 128000 256000
+    for num in 1 2 4 8 10
     do
+        let "N=$num*$num*1000"
+        let "WS=$num*$WS_base"
+
         # Baseline
         mpirun -n 1 build/my_mpi_bin $N $WS 1
 
