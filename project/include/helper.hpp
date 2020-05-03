@@ -6,6 +6,7 @@
 
 #include "mpi.h"
 
+// Save for video plot
 void save_people_pos(Region region, int p, int P) {
     std::ofstream myfile;
     bool sendBuffer, recieveBuffer;
@@ -35,6 +36,7 @@ void save_people_pos(Region region, int p, int P) {
     }
 }
 
+// Save for histogram plot
 void save_hist_data(Region region, int p, int P) {
     std::ofstream myfile;
     bool sendBuffer, recieveBuffer;
@@ -65,8 +67,10 @@ void save_hist_data(Region region, int p, int P) {
     }
 }
 
+// Send the given 'people' to processor 'to'.
 void send_people(int to, const std::list<Person>& people) {
-    int size = 3 * people.size();  // A person is defined by 3 floats
+    // Encode person class to 3 floats (x,y,status)
+    int size = 3 * people.size(); 
     float encoded_people[size];
     int i = 0;
     for (auto it = people.begin(); it != people.end(); ++it) {
@@ -75,22 +79,28 @@ void send_people(int to, const std::list<Person>& people) {
         encoded_people[i + 2] = (float)it->status_;
         i += 3;
     }
-    // std::cout << "sending size: " << ((float) size)/3.0 << ", to: " << to << std::endl;
+
+    // First send how much you will send
     MPI_Send(&size, 1, MPI::INT, to, 0, MPI_COMM_WORLD);  // Send number of people
-    // std::cout << "sent size: " << ((float) size)/3.0 << ", to: " << to << std::endl;
     if (size == 0) return;
+
+    // Then send that number of people
     MPI_Send(&encoded_people, size, MPI::FLOAT, to, 0, MPI_COMM_WORLD);  // Send encoded people
 }
 
 void receive_people(int from, std::vector<Person>* people) {
     MPI_Status status;
+
+    // Recieve the amount of people you will recieve
     int size;
-    // std::cout << "receiving from: " << from << std::endl;
     MPI_Recv(&size, 1, MPI::INT, from, 0, MPI_COMM_WORLD, &status);
-    // std::cout << "received size: " << ((float) size)/3.0 <<  ", from: " << from << std::endl;
     if (size == 0) return;
+
+    // Recieve that amount of people
     float encoded_people[size];
     MPI_Recv(&encoded_people, size, MPI::FLOAT, from, 0, MPI_COMM_WORLD, &status);
+
+    // Transform 3 floats into people class
     people->reserve(size / 3);
     for (int i = 0; i < size; i += 3) {
         Person person(encoded_people[i], encoded_people[i + 1], (int)encoded_people[i + 2]);
@@ -98,6 +108,8 @@ void receive_people(int from, std::vector<Person>* people) {
     }
 }
 
+// If a person arrives at an edge of the world, as the world wraps around,
+// it should remove/add the world size from its coordinate.
 void update_border_people_x(env::RegionCoordinates r_coord,
                             std::list<Person>* people_to_left_region,
                             std::list<Person>* people_to_right_region) {
@@ -124,6 +136,7 @@ void update_border_people_y(env::RegionCoordinates r_coord,
     }
 }
 
+// Does all the communication needed
 void exchange_people(env::RegionCoordinates r_coord,
                     std::list<Person> people_to_left_region_infectious,
                     std::list<Person> people_to_right_region_infectious,
@@ -136,13 +149,13 @@ void exchange_people(env::RegionCoordinates r_coord,
                     std::vector<Person>* immigrant_people,
                     std::vector<Person>* border_people) {
 
-    //TODO Corner people update x and y
-    // Update wolrd border people's coordinates
+    // If close to the edge of the world, brings to the opposite edge
     update_border_people_x(r_coord, &people_to_left_region, &people_to_right_region);
     update_border_people_x(r_coord, &people_to_left_region_infectious, &people_to_right_region_infectious);
     
     std::vector<Person> tempImmigrant_people;
 
+    // If only one processor in the x direction, simply reinsert people leaving in the same processor
     if (r_coord.Px == 1) {
         for (Person pers : people_to_left_region) tempImmigrant_people.push_back(pers);
         for (Person pers : people_to_right_region) tempImmigrant_people.push_back(pers);
@@ -177,6 +190,7 @@ void exchange_people(env::RegionCoordinates r_coord,
         }
     }
 
+    // Checks for people in the corner and decided whether they should be sent further
     for (Person& pers : tempImmigrant_people) {
         if (pers.y <= r_coord.bound.lower + env::INFECTION_DISTANCE)
             if (pers.y <= r_coord.bound.lower) {
@@ -204,13 +218,7 @@ void exchange_people(env::RegionCoordinates r_coord,
             immigrant_people->push_back(pers);
     }
 
-    //for (Person& pers : *border_people) {
-    //    if (pers.y <= r_coord.bound.lower + env::INFECTION_DISTANCE)
-    //        people_to_below_region_infectious.push_back(pers);
-    //    if (pers.y > r_coord.bound.upper - env::INFECTION_DISTANCE)
-    //        people_to_above_region_infectious.push_back(pers);
-    //}
-
+    // Same for sending vertically
     update_border_people_y(r_coord, &people_to_below_region, &people_to_above_region);
     update_border_people_y(r_coord, &people_to_below_region_infectious, &people_to_above_region_infectious);
 

@@ -10,13 +10,12 @@
 #include <env.hpp>
 #include <helper.hpp>
 
-bool DEBUG = false;  // Turn true if you wanna print and save histogram data (SLOWER)
-int m = 0;
+bool DEBUG = true;  // Turn true if you wanna print and save histogram data (SLOWER)
 
 namespace env {
-    float WORLD_SIZE = 10.0;
-    int PROCESSORS_IN_X_DIRECTION = 2;
-    int NR_PEOPLE = 5000; // per region
+    float WORLD_SIZE;
+    int PROCESSORS_IN_X_DIRECTION;
+    int NR_PEOPLE; // per region
 }
 
 void printStatus(Region &region, float t) {
@@ -26,7 +25,7 @@ void printStatus(Region &region, float t) {
     std::cout << msg.str();
 }
 
-bool communicate(Region *region, std::default_random_engine *generator) {
+bool simulateTimestep(Region *region, std::default_random_engine *generator) {
     // Exhanges people with other regions
     std::list<Person> people_to_prev_region;
     std::list<Person> people_to_next_region;
@@ -38,11 +37,20 @@ bool communicate(Region *region, std::default_random_engine *generator) {
     std::list<Person> people_to_below_region_infectious;
     std::vector<Person> immigrant_people;
     std::vector<Person> border_people;
+
+    // Move people and decide who goes where
     region->movePeople(generator, &people_to_prev_region_infectious, &people_to_next_region_infectious, &people_to_above_region_infectious, &people_to_below_region_infectious, &people_to_prev_region, &people_to_next_region, &people_to_above_region, &people_to_below_region, &border_people);
+    
+    // Exchange people with neighbouring processors
     exchange_people(*(region->coordinates), people_to_prev_region_infectious, people_to_next_region_infectious, people_to_above_region_infectious, people_to_below_region_infectious, people_to_prev_region, people_to_next_region, people_to_above_region, people_to_below_region, &immigrant_people, &border_people);
+    
+    // People at the border need to be sorted
     std::sort(border_people.begin(), border_people.end());
-    m += immigrant_people.size();
+
+    // Immigrant people (incoming people) are added to the stored people and this gets resorted
     region->addPeople(immigrant_people);
+
+    // The status of all people in the region gets updated (becomes infected or removed)
     bool change = region->updateStatus(generator,&border_people);
     return change;
 }
@@ -53,6 +61,7 @@ int main(int argc, char** argv) {
         return 0;
     }
 
+    // Start MPI
     int p, P;
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &P);
@@ -60,38 +69,48 @@ int main(int argc, char** argv) {
     std::cout.precision(6);
     double start_time = MPI_Wtime();
 
+    // Input command line arguments
     env::PROCESSORS_IN_X_DIRECTION = atoi(argv[3]);
     env::NR_PEOPLE = atoi(argv[1])/P;
     env::WORLD_SIZE = (float) atoi(argv[2]);
 
+    // Print status
     if (p == 0 )
         std::cout << "P:" << P << ", n:" << env::NR_PEOPLE
         << ", N:" << P*env::NR_PEOPLE
         << ", WS:" << env::WORLD_SIZE
         << ", IR:" << env::INFECTION_RATE << std::endl; // Infection rate per time step
 
-    // std::default_random_engine generator(time(0) + p * 1000);
-    std::default_random_engine generator(p);
+    // std::default_random_engine generator(time(0) + p);
+    std::default_random_engine generator(time(0) + p);
+
+    // Check number of processors devidable by processors in x direction
     if (P % env::PROCESSORS_IN_X_DIRECTION != 0) {
         MPI_Finalize();
         return -1;
     }
-    env::RegionCoordinates region_coordinates(p, P);
 
+    // Define region and create it with the right number of people
+    env::RegionCoordinates region_coordinates(p, P);
     Region region(env::NR_PEOPLE, &region_coordinates, &generator);
+
+    // Infect one person
     if (p == 0) {
         Person* Mike = region.getRandomPerson();
         Mike->getInfected(&generator);
     }
-    // std::cout << region_coordinates.px << ", " << region_coordinates.py << ". People size: " << region.people_.size() << std::endl;
 
-
+    // Print status, init counter, define frequency of ploting
     printStatus(region, -1);
     int iteration = 0;
     int vis_freq = (int) (0.1/env::TIME_STEP);
-    for (float t = 0; t <= env::NR_DAYS; t += env::TIME_STEP) {
-        bool change = communicate(&region, &generator);
 
+    // Main loop over timesteps
+    for (float t = 0; t <= env::NR_DAYS; t += env::TIME_STEP) {
+        // Execute one timestep
+        bool change = simulateTimestep(&region, &generator);
+
+        // Save information and print status
         if (DEBUG) {
             if (change)
                 printStatus(region, t);
@@ -103,8 +122,9 @@ int main(int argc, char** argv) {
             iteration += 1;
         }
     }
+
+    // Print information at the end
     printStatus(region, -1);
-    // MPI_Barrier(MPI_COMM_WORLD);
     if (p == 0) {
         double exec_time = MPI_Wtime() - start_time;
         std::cout << "The process took " << exec_time << " seconds to run." << std::endl;
@@ -115,8 +135,6 @@ int main(int argc, char** argv) {
         myfile.close();
     }
 
-    // std::cout << region_coordinates.px << ", " << region_coordinates.py << ", m: " << m/(env::NR_DAYS/env::TIME_STEP) << std::endl;
-    // std::cout << region_coordinates.px << ", " << region_coordinates.py << ". People size: " << region.people_.size() << std::endl;
-
+    // Finish
     MPI_Finalize();
 }

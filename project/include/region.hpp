@@ -32,8 +32,6 @@ class Region {
 
     std::string getStatus(bool human_readable=true);
 
-    bool deleteSidePeople();
-
     Person *getRandomPerson();
      
     std::string get_serialized_people();

@@ -3,12 +3,15 @@
 Region::Region(int people_num, env::RegionCoordinates* coord, std::default_random_engine *generator) {
     coordinates = coord;
     boundary = &(coord->bound);
+
     // Instantiate all the people
     for (int i = 0; i < people_num; i++) {
         float pos_x = (boundary->right - boundary->left) * UniformDistribution(*generator) + boundary->left;
         float pos_y = (boundary->upper - boundary->lower) * UniformDistribution(*generator) + boundary->lower;
         people_.emplace_back(Person(pos_x, pos_y));
     }
+
+    // Sort people
     std::sort(people_.begin(), people_.end());
 }
 
@@ -22,6 +25,10 @@ void Region::movePeople(std::default_random_engine *generator,
                         std::list<Person>* people_to_above_region,
                         std::list<Person>* people_to_below_region,
                         std::vector<Person>* border_people) {
+
+    // Move each person and determine whether they stay or to which processor they are being sent
+    // Makes sure no person is duplicated
+    // Will also determine if someone is close to the border and should be sent aswell
     std::vector<Person> people_that_stay;
     people_that_stay.reserve(people_.size());  // Avoid relocation O(n)
     for (Person& person : people_) {  // O(n)
@@ -68,7 +75,7 @@ void Region::movePeople(std::default_random_engine *generator,
 }
 
 void Region::addPeople(std::vector<Person> new_people) {
-    // people_.reserve(new_people.size());
+    // Adds incoming people and sorts the whole array
     for (Person& person : new_people) {
         people_.push_back(person);
     }    
@@ -77,16 +84,17 @@ void Region::addPeople(std::vector<Person> new_people) {
 }
 
 bool Region::updateStatus(std::default_random_engine *generator, std::vector<Person>* border_people) {
-    // Returns total number of infected people
+    // Returns whether a status got updated (someone became infected or removed)
     bool change = false;
     std::list<Person*> recentPeople = {};
     std::vector<Person>::iterator border_start = border_people->begin();
     for (Person& person : people_) {
+        // For infected people 
+        // - be sick (count down the infected time)
+        // - if a non infected person is close, infect him/her
         if (person.isInfected()) {
             if (person.beSick() == 0) {
                 change = true;
-                //people_.erase(*person);  //TODO
-                //inactivePeople_.insert(person);
             } 
             else {
                 for (Person* person2 : recentPeople) {
@@ -95,6 +103,9 @@ bool Region::updateStatus(std::default_random_engine *generator, std::vector<Per
                 }
             }
         } 
+        // For susceptible people
+        // - if an infected person is close, infect yourself
+        // - check with the people at the border if they can infect you
         if (person.isSusceptible()) {
             for (Person* person2 : recentPeople) {
                 if ((person.distanceSquaredTo(*person2) < env::INFECTION_DISTANCE_SQUARED) && person2->isInfected()) {
@@ -122,7 +133,8 @@ bool Region::updateStatus(std::default_random_engine *generator, std::vector<Per
                 }
             }
         }
-
+        
+        // Keep only people to compare with that have an x-coordinate close enough (both for people at the border and inside the region)
         while (border_start != border_people->end() && (*border_start).x < person.x - env::INFECTION_DISTANCE)
             border_start++;
 
@@ -135,6 +147,7 @@ bool Region::updateStatus(std::default_random_engine *generator, std::vector<Per
     return change;
 }
 
+// Returns the number of susceptibles, infected and removed
 std::string Region::getStatus(bool human_readable) {
     std::stringstream msg;
     int nbInfected = 0;
@@ -154,21 +167,12 @@ std::string Region::getStatus(bool human_readable) {
     return msg.str();
 }
 
-bool Region::deleteSidePeople() {
-    std::cout << "DEPRECATED - SHOULDN'T USE DELETESIDEPEOPLE" << std::endl;
-    std::vector<Person> people_that_stay;
-    int nbPeople = people_.size();
-    for (Person& person : people_)
-        if (person.x >= boundary->left && person.x < boundary->right && person.y < boundary->upper && person.y >= boundary->lower)
-            people_that_stay.push_back(person);
-    people_ = people_that_stay;
-    return (nbPeople != people_.size());
-}
-
+// Returns a random person in the region
 Person * Region::getRandomPerson() {
     return &people_[rand() % people_.size()];
 }
 
+// Print every person in the region
 void Region::print() {
     for (Person person : people_) {
         person.print();
