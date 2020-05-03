@@ -19,21 +19,35 @@ def get_i(n, px, py):
 
 if __name__ == "__main__":
     # Inputs
-    t = 15000
-    P = 4
-    p_x = 2
-    WS = 500.0
+    # t = 15000
+    P = 32
+    p_x = 4
+    WS_base = 500.0
     SPEED = 1.0
     INFECTION_DISTANCE = 1.0
-    N = 1000
+    # N = 1000
 
     # Computed
-    p_y = float(P/p_x)
-    px = float(WS/p_x)  # perimeter in x
-    py = float(WS/p_y)  # perimeter in x
-    s = 1 # SIGMA
+    # alpha = 755.7557557557558
+    # beta = -3588
+    alpha = 100
+    beta = 10000
 
-    for N in [1000, 2000, 4000, 8000, 16000, 32000]:
+
+    min_error = 50
+    min_params = None
+    # for alpha in np.linspace(0, 5000, 1000):
+    #     for beta in np.linspace(-5000, 5000, 1000):
+
+    sols = []
+    for en, num in enumerate([1e6]):
+        N = num*num*1000
+        WS = WS_base*num
+        p_y = float(P/p_x)
+        px = float(WS/p_x)  # perimeter in x
+        py = float(WS/p_y)  # perimeter in x
+        
+        s = 1 # SIGMA
         T_1 = N + get_m(N, WS, WS, s) + N*math.log(N, 2) + get_k(N, WS)*N
         n = float(N/P)
         m = get_m(n, px, py, s)
@@ -43,7 +57,14 @@ if __name__ == "__main__":
         print("m:", m)
         print("k:", k)
         print("i:", i)
-        T_p = n + m + n*math.log(n, 2) + k*n + (8000 + 2400*(m + i))  # 8000 because t_startup is 1000 times slower than t_a or t_data, 2400 should be 24 but had to tune it a bit
+        T_p = n + m + n*math.log(n, 2) + k*n + alpha*(m + i) + beta  # 8000 because t_startup is 1000 times slower than t_a or t_data, 2400 should be 24 but had to tune it a bit
+        sols.append(T_1/T_p)
         print("Speedup of", N, ":", T_1/T_p)
 
-
+    error = np.linalg.norm(np.array(sols) - np.array([15, 40, 50]))
+    if error < min_error:
+        min_error = error
+        min_params = [alpha, beta]
+            # print("error:", error)
+    print(min_error)
+    print(min_params)

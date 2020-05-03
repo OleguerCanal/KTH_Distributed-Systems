@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
         }
     }
     printStatus(region, -1);
-    // MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
     if (p == 0) {
         double exec_time = MPI_Wtime() - start_time;
         std::cout << "The process took " << exec_time << " seconds to run." << std::endl;

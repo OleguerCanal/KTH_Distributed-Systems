@@ -8,7 +8,6 @@ cmake_minimum_required(VERSION 3.10)
 # Settings for release mode
 set(CMAKE_BUILD_TYPE Release)
 
-
 find_package(MPI REQUIRED)
 
 include_directories(include)
